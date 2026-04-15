@@ -8,6 +8,7 @@ RUN npm install
 COPY tsconfig.json ./
 COPY src ./src
 COPY templates ./templates
+COPY public ./public
 
 RUN npm run build
 
@@ -20,6 +21,7 @@ RUN npm install --production
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/public ./public
 
 EXPOSE 3000
 
