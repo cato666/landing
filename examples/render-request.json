@@ -1,0 +1,75 @@
+{
+  "templateCode": "landing-poliza-mvp-ptbr-v2",
+  "data": {
+    "branding": {
+      "empresa": "Porto Seguro",
+      "produto": "Auto Premium",
+      "tagline": "Apólice digital interativa",
+      "navSubtitle": "MVP apólice visual interativa",
+      "heroTitle": "Olá, Maria Silva",
+      "heroDescription": "Navegue pelas informações principais do seu seguro, coberturas, veículo, pagamento e canais de atendimento."
+    },
+    "cliente": {
+      "nome": "Maria Silva",
+      "documento": "123.456.789-00",
+      "telefone": "(11) 91234-5678",
+      "email": "maria.silva@example.com"
+    },
+    "poliza": {
+      "numero": "PS-2026-0001",
+      "vigenciaDesde": "2026-04-13",
+      "vigenciaHasta": "2027-04-12",
+      "estado": "Vigente",
+      "primaTotal": 2522.98,
+      "franquia": 10153,
+      "moneda": "BRL"
+    },
+    "vehiculo": {
+      "marca": "Toyota",
+      "modelo": "Corolla Altis",
+      "anio": 2024,
+      "placa": "ABCD123",
+      "combustivel": "Gasolina",
+      "uso": "Particular",
+      "fotoUrl": "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop"
+    },
+    "residencia": {
+      "direccion": "Rua Saint Hilaire, 47, Jardim Paulista, Sao Paulo - SP"
+    },
+    "corredor": {
+      "nombre": "Potencia Corretora de Seguros",
+      "telefono": "(11) 3338-1764",
+      "email": "info@test.com"
+    },
+    "beneficios": [
+      { "titulo": "Assistência 24 horas" },
+      { "titulo": "Carro reserva" },
+      { "titulo": "Serviço de vidros" }
+    ],
+    "coberturas": [
+      {
+        "titulo": "Colisão, incêndio, roubo e furto",
+        "monto": 1730.65,
+        "detalle": "Cobertura principal do casco do veículo conforme condições da apólice."
+      },
+      {
+        "titulo": "Responsabilidade civil facultativa",
+        "monto": 200000,
+        "detalle": "Cobertura para danos materiais e corporais causados a terceiros."
+      }
+    ],
+    "pagos": {
+      "forma": "Débito em conta",
+      "cuotas": [
+        { "numero": 1, "vencimiento": "2026-04-30", "valor": 630.73 },
+        { "numero": 2, "vencimiento": "2026-05-30", "valor": 630.75 },
+        { "numero": 3, "vencimiento": "2026-06-30", "valor": 630.75 },
+        { "numero": 4, "vencimiento": "2026-07-30", "valor": 630.75 }
+      ]
+    },
+    "canalesAtencion": [
+      { "tipo": "Telefone", "valor": "0800-123-456" },
+      { "tipo": "WhatsApp", "valor": "+55 11 99999-0000" }
+    ]
+  }
+}

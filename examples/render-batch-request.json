@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "templateCode": "landing-poliza-mvp-ptbr-v2",
+      "data": {
+        "branding": {
+          "empresa": "Porto Seguro",
+          "produto": "Auto Premium"
+        },
+        "cliente": {
+          "nome": "Maria Silva"
+        }
+      }
+    },
+    {
+      "templateCode": "landing-poliza-mvp-ptbr-v2",
+      "data": {
+        "branding": {
+          "empresa": "Porto Seguro",
+          "produto": "Moto"
+        },
+        "cliente": {
+          "nome": "Joao Pereira"
+        }
+      }
+    }
+  ]
+}
