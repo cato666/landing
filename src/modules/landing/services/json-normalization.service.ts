@@ -1,5 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CanonicalLandingModel } from '../types/canonical-landing.model';
+import {
+  BeneficioInfo,
+  CanalAtencionInfo,
+  CanonicalLandingModel,
+  ClienteInfo,
+  CoberturaInfo,
+  CorredorInfo,
+  PagosInfo,
+  PolizaInfo,
+  ResidenciaInfo,
+  VehiculoInfo,
+} from '../types/canonical-landing.model';
 
 @Injectable()
 export class JsonNormalizationService {
@@ -18,7 +29,7 @@ export class JsonNormalizationService {
     };
   }
 
-  private normalizeBranding(data: Record<string, unknown>) {
+  private normalizeBranding(data: Record<string, unknown>): CanonicalLandingModel['branding'] {
     const branding = this.asObject(data.branding);
 
     return {
@@ -34,22 +45,22 @@ export class JsonNormalizationService {
     };
   }
 
-  private normalizeCliente(data: Record<string, unknown>) {
+  private normalizeCliente(data: Record<string, unknown>): ClienteInfo {
     const cliente = this.asObject(data.cliente);
 
     return {
-      nome: this.asString(cliente.nome, '-'),
-      documento: this.asString(cliente.documento ?? cliente.cpf, '-'),
-      telefone: this.asString(cliente.telefone ?? cliente.telefono, '-'),
-      email: this.asString(cliente.email, '-'),
+      nome: this.asString(cliente.nome),
+      documento: this.asString(cliente.documento ?? cliente.cpf),
+      telefone: this.asString(cliente.telefone ?? cliente.telefono),
+      email: this.asString(cliente.email),
     };
   }
 
-  private normalizePoliza(data: Record<string, unknown>) {
+  private normalizePoliza(data: Record<string, unknown>): PolizaInfo {
     const poliza = this.asObject(data.poliza);
 
     return {
-      numero: this.asString(poliza.numero, '-'),
+      numero: this.asString(poliza.numero),
       vigenciaDesde: this.asString(poliza.vigenciaDesde ?? poliza.vigencia_inicio, ''),
       vigenciaHasta: this.asString(poliza.vigenciaHasta ?? poliza.vigencia_fin, ''),
       estado: this.asString(poliza.estado ?? poliza.status, 'Vigente'),
@@ -59,15 +70,15 @@ export class JsonNormalizationService {
     };
   }
 
-  private normalizeVehiculo(data: Record<string, unknown>) {
+  private normalizeVehiculo(data: Record<string, unknown>): VehiculoInfo {
     const vehiculo = this.asObject(data.vehiculo);
 
     return {
       marca: this.asString(vehiculo.marca, ''),
-      modelo: this.asString(vehiculo.modelo, '-'),
-      anio: this.asString(vehiculo.anio, '-'),
-      patente: this.asString(vehiculo.patente ?? vehiculo.placa, '-'),
-      combustible: this.asString(vehiculo.combustible ?? vehiculo.combustivel, '-'),
+      modelo: this.asString(vehiculo.modelo),
+      anio: this.asString(vehiculo.anio),
+      patente: this.asString(vehiculo.patente ?? vehiculo.placa),
+      combustible: this.asString(vehiculo.combustible ?? vehiculo.combustivel),
       uso: this.asString(vehiculo.uso, 'Particular'),
       fotoUrl: this.asString(
         vehiculo.fotoUrl,
@@ -76,7 +87,7 @@ export class JsonNormalizationService {
     };
   }
 
-  private normalizeResidencia(data: Record<string, unknown>) {
+  private normalizeResidencia(data: Record<string, unknown>): ResidenciaInfo {
     const residencia = this.asObject(data.residencia);
 
     return {
@@ -87,23 +98,23 @@ export class JsonNormalizationService {
     };
   }
 
-  private normalizeCorredor(data: Record<string, unknown>) {
+  private normalizeCorredor(data: Record<string, unknown>): CorredorInfo {
     const corredor = this.asObject(data.corredor);
 
     return {
-      nombre: this.asString(corredor.nombre ?? corredor.nome, '-'),
-      telefono: this.asString(corredor.telefono ?? corredor.telefone, '-'),
-      email: this.asString(corredor.email, '-'),
+      nombre: this.asString(corredor.nombre ?? corredor.nome),
+      telefono: this.asString(corredor.telefono ?? corredor.telefone),
+      email: this.asString(corredor.email),
     };
   }
 
-  private normalizeBeneficios(value: unknown) {
+  private normalizeBeneficios(value: unknown): BeneficioInfo[] {
     return this.asArray(value).map((item) => ({
       titulo: this.asString(item.titulo ?? item.title ?? item.descripcion, 'Beneficio'),
     }));
   }
 
-  private normalizeCoberturas(value: unknown) {
+  private normalizeCoberturas(value: unknown): CoberturaInfo[] {
     return this.asArray(value).map((item) => ({
       titulo: this.asString(item.titulo ?? item.nombre, 'Cobertura'),
       monto: this.asNumber(item.monto ?? item.valor),
@@ -111,7 +122,7 @@ export class JsonNormalizationService {
     }));
   }
 
-  private normalizePagos(value: unknown) {
+  private normalizePagos(value: unknown): PagosInfo {
     const pagos = this.asObject(value);
     const cuotas = this.asArray(pagos.cuotas ?? pagos.parcelas).map((item, index) => ({
       numero: this.asNumber(item.numero, index + 1),
@@ -125,7 +136,7 @@ export class JsonNormalizationService {
     };
   }
 
-  private normalizeCanalesAtencion(value: unknown) {
+  private normalizeCanalesAtencion(value: unknown): CanalAtencionInfo[] {
     const canales = this.asArray(value).map((item) => ({
       titulo: this.asString(item.titulo ?? item.tipo, 'Canal 24h'),
       valor: this.asString(item.valor, '-'),

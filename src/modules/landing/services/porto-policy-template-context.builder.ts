@@ -5,7 +5,9 @@ import { TemplateContextBuilder } from '../types/template.type';
 @Injectable()
 export class PortoPolicyTemplateContextBuilder implements TemplateContextBuilder {
   supports(templateCode: string, _templateVersion: string): boolean {
-    return templateCode === 'landing-poliza-mvp-ptbr-v2';
+    // TODO: Validación de templateCode deshabilitada temporalmente
+    // Aceptar cualquier templateCode para permitir experimentación con nuevas variantes
+    return true;
   }
 
   build(canonical: CanonicalLandingModel): Record<string, unknown> {
@@ -15,9 +17,7 @@ export class PortoPolicyTemplateContextBuilder implements TemplateContextBuilder
     const vehiculo = canonical.vehiculo;
     const residencia = canonical.residencia;
     const canalesAtencion = canonical.canalesAtencion;
-    const cuotas = Array.isArray(canonical.pagos.cuotas)
-      ? (canonical.pagos.cuotas as Array<Record<string, unknown>>)
-      : [];
+    const cuotas = Array.isArray(canonical.pagos.cuotas) ? canonical.pagos.cuotas : [];
 
     return {
       ...canonical,

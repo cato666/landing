@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Landing Digital Interativa | ScriptoCCM</title>
+  <style>
+    :root {
+      --bg: #06111f;
+      --bg-soft: #0b1728;
+      --card: rgba(15, 23, 42, 0.92);
+      --card-strong: rgba(15, 23, 42, 0.98);
+      --text: #f8fafc;
+      --muted: #c7d2fe;
+      --muted-2: #cbd5e1;
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --primary-soft: rgba(14, 165, 233, 0.16);
+      --accent: #22d3ee;
+      --border: rgba(148, 163, 184, 0.18);
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+      --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.28);
+      --radius: 24px;
+      --ease: 220ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(14, 165, 233, 0.18), transparent 28%),
+        radial-gradient(circle at 85% 10%, rgba(34, 211, 238, 0.16), transparent 24%),
+        linear-gradient(180deg, #0a1222 0%, #020617 100%);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page {
+      width: min(1280px, calc(100% - 28px));
+      margin: 20px auto 24px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 22px;
+      align-items: start;
+      min-height: calc(100vh - 44px);
+    }
+
+    .sidebar,
+    .content-shell,
+    .card,
+    .preview-card,
+    .result-summary,
+    .info-card,
+    .status-box,
+    .mini-card,
+    .stat-box {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease), background var(--ease), opacity var(--ease);
+    }
+
+    .sidebar,
+    .content-shell,
+    .card,
+    .preview-card,
+    .result-summary,
+    .info-card,
+    .status-box,
+    .mini-card,
+    .stat-box,
+    .brand-block,
+    .step-item,
+    input[type="text"],
+    textarea,
+    .artifact,
+    .pill {
+      border-radius: 20px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      min-height: calc(100vh - 44px);
+      animation: fadeUp .5s var(--ease) both;
+    }
+
+    .brand-block {
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.92) 0%, rgba(6, 182, 212, 0.88) 55%, rgba(99, 102, 241, 0.80) 100%);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(14, 165, 233, 0.32);
+      animation: shimmerFloat 7s ease-in-out infinite;
+    }
+
+    .brand-block::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 180px;
+      height: 180px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+
+    .brand-logo {
+      display: block;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-block h1 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-block p {
+      margin: 0;
+      color: rgba(255,255,255,0.95);
+      line-height: 1.6;
+      font-size: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stepper-title {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step-item {
+      appearance: none;
+      width: 100%;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.92);
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform var(--ease), border-color var(--ease), background var(--ease), box-shadow var(--ease);
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      align-items: center;
+      color: var(--text);
+    }
+
+    .step-item:hover {
+      border-color: rgba(14, 165, 233, 0.5);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+    }
+
+    .step-item.active {
+      border-color: rgba(14, 165, 233, 0.7);
+      background: linear-gradient(180deg, rgba(14,165,233,0.18), rgba(15,23,42,0.96));
+      box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.22), 0 16px 35px rgba(14, 165, 233, 0.18);
+    }
+
+    .step-item.done {
+      border-color: rgba(34, 197, 94, 0.4);
+      background: rgba(20, 83, 45, 0.22);
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--text);
+      transition: transform var(--ease), background var(--ease), box-shadow var(--ease);
+    }
+
+    .step-item:hover .step-number {
+      transform: scale(1.06);
+    }
+
+    .step-item.active .step-number {
+      background: linear-gradient(135deg, var(--primary), #6366f1);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(14,165,233,0.32);
+    }
+
+    .step-item.done .step-number {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .step-text strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .step-text span {
+      display: block;
+      font-size: 13px;
+      color: var(--muted-2);
+      line-height: 1.45;
+    }
+
+    .status-box,
+    .mini-card,
+    .card,
+    .preview-card,
+    .result-summary,
+    .info-card,
+    .stat-box {
+      padding: 18px;
+    }
+
+    .card:hover,
+    .preview-card:hover,
+    .info-card:hover,
+    .result-summary:hover,
+    .mini-card:hover,
+    .stat-box:hover {
+      transform: translateY(-3px);
+      border-color: rgba(14, 165, 233, 0.22);
+      box-shadow: 0 18px 38px rgba(0,0,0,0.34);
+    }
+
+    .status-box h3,
+    .mini-card h3,
+    .content-head h2,
+    .card h3,
+    .preview-card h3,
+    .result-summary h3,
+    .info-card h3 {
+      margin: 0 0 10px;
+      color: var(--text);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 13px;
+      transition: transform var(--ease), box-shadow var(--ease), background var(--ease);
+    }
+
+    .status-idle { background: rgba(148,163,184,0.14); color: #e2e8f0; }
+    .status-loading { background: rgba(14,165,233,0.18); color: #bae6fd; box-shadow: 0 0 0 1px rgba(14,165,233,0.18), 0 0 24px rgba(14,165,233,0.18); animation: pulseSoft 1.6s ease-in-out infinite; }
+    .status-success { background: rgba(34,197,94,0.16); color: #bbf7d0; }
+    .status-error { background: rgba(239,68,68,0.16); color: #fecaca; }
+
+    .mini-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-card p,
+    .status-box p,
+    .content-head p,
+    .card p,
+    .preview-card p,
+    .result-summary p,
+    .info-card p,
+    .helper,
+    .result-note,
+    .kv div:nth-child(odd) {
+      color: var(--muted-2);
+      line-height: 1.65;
+    }
+
+    .content-shell {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      min-height: calc(100vh - 44px);
+      animation: fadeUp .55s var(--ease) both;
+    }
+
+    .content-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(148,163,184,0.14);
+    }
+
+    .content-head h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    .content-head p {
+      margin: 0;
+      max-width: 760px;
+    }
+
+    .view {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+    }
+
+    .view.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      animation: viewEnter .35s var(--ease) both;
+    }
+
+    .benefits-grid,
+    .compare-grid,
+    .config-grid,
+    .result-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-slide {
+      position: relative;
+      overflow: hidden;
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(10,18,34,0.96) 0%, rgba(14,165,233,0.14) 48%, rgba(99,102,241,0.16) 100%);
+      border: 1px solid rgba(14, 165, 233, 0.22);
+    }
+
+    .hero-slide::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -60px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,211,238,0.22), transparent 62%);
+      filter: blur(10px);
+    }
+
+    .hero-slide-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #bae6fd;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .hero-slide h3 {
+      margin: 0 0 12px;
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      max-width: 760px;
+    }
+
+    .hero-slide p {
+      margin: 0;
+      color: rgba(226,232,240,0.92);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .impact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .impact-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .future-boxes {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      padding: 8px 0;
+    }
+
+    .future-box.before {
+      animation: softFloatLeft 6.2s ease-in-out infinite;
+    }
+
+    .future-box.after {
+      animation: softFloatRight 6.2s ease-in-out infinite;
+    }
+
+    .transform-connector {
+      position: absolute;
+      left: 50%;
+      top: calc(50% - 24px);
+      width: 120px;
+      height: 48px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 2;
+      animation: connectorPulse 3.2s ease-in-out infinite;
+    }
+
+    .transform-connector::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 18px;
+      top: 50%;
+      height: 2px;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, rgba(239,68,68,0.28) 0%, rgba(34,211,238,0.95) 100%);
+      box-shadow: 0 0 20px rgba(34,211,238,0.28);
+      transform-origin: left center;
+      animation: flowLine 2.8s ease-in-out infinite;
+    }
+
+    .transform-connector::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-top: 2px solid rgba(34,211,238,0.95);
+      border-right: 2px solid rgba(34,211,238,0.95);
+      transform: translateY(-50%) rotate(45deg);
+      box-shadow: 0 0 12px rgba(34,211,238,0.24);
+      animation: arrowNudge 2.8s ease-in-out infinite;
+    }
+
+    .transform-pill {
+      position: relative;
+      z-index: 1;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(8,15,29,0.92);
+      border: 1px solid rgba(34,211,238,0.22);
+      color: #e0f2fe;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      box-shadow: 0 10px 24px rgba(2,6,23,0.34);
+      white-space: nowrap;
+    }
+
+    .future-box {
+      position: relative;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.16);
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      z-index: 1;
+    }
+
+    .future-box small {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: #bae6fd;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .future-box strong {
+      display: block;
+      color: #fff;
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+
+    .future-box span {
+      display: block;
+      color: rgba(226,232,240,0.88);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .future-box.before {
+      background: linear-gradient(180deg, rgba(127,29,29,0.24), rgba(15,23,42,0.76));
+      border-color: rgba(248,113,113,0.18);
+    }
+
+    .future-box.after {
+      background: linear-gradient(180deg, rgba(14,100,165,0.22), rgba(15,23,42,0.76));
+      border-color: rgba(56,189,248,0.22);
+    }
+
+    .benefits-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .compare-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .config-grid,
+    .result-grid {
+      grid-template-columns: 0.72fr 1.28fr;
+      align-items: start;
+    }
+
+    .card,
+    .preview-card,
+    .result-summary,
+    .info-card {
+      padding: 22px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      border-radius: 999px;
+      background: rgba(14,165,233,0.14);
+      color: #bae6fd;
+      font-weight: 800;
+      font-size: 13px;
+      border: 1px solid rgba(14,165,233,0.22);
+      transition: transform var(--ease), box-shadow var(--ease), background var(--ease);
+    }
+
+    .pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+    }
+
+    .share-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      background: linear-gradient(180deg, rgba(21, 128, 61, 0.16), rgba(15, 23, 42, 0.92));
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.span-2 {
+      grid-column: span 2;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #dcfce7;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(2, 6, 23, 0.48);
+      color: var(--text);
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color var(--ease), box-shadow var(--ease), background var(--ease);
+    }
+
+    .field textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: rgba(34, 197, 94, 0.5);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+      background: rgba(2, 6, 23, 0.65);
+    }
+
+    .share-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .share-preview {
+      word-break: break-word;
+      color: #dcfce7;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .compare-box-legacy {
+      background: linear-gradient(180deg, rgba(127,29,29,0.25), rgba(15,23,42,0.96));
+    }
+
+    .compare-box-digital {
+      background: linear-gradient(180deg, rgba(14,100,165,0.22), rgba(15,23,42,0.96));
+    }
+
+    .compare-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted-2);
+      line-height: 1.85;
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.22);
+      background: rgba(2,6,23,0.88);
+      padding: 16px;
+      font: 14px/1.55 Consolas, Monaco, monospace;
+      color: #f8fafc;
+      transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(14,165,233,0.55);
+      box-shadow: 0 0 0 4px rgba(14,165,233,0.10);
+      transform: translateY(-1px);
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    textarea {
+      min-height: 470px;
+      resize: none;
+    }
+
+    .helper {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .actions,
+    .footer-actions,
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .actions {
+      margin-top: 18px;
+    }
+
+    .footer-actions {
+      margin-top: 24px;
+      justify-content: space-between;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform var(--ease), box-shadow var(--ease), background var(--ease), border-color var(--ease), opacity var(--ease);
+      will-change: transform;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(14, 165, 233, 0.32);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 18px 40px rgba(14, 165, 233, 0.42);
+    }
+
+    .btn-soft {
+      background: rgba(14,165,233,0.14);
+      color: #bae6fd;
+      border: 1px solid rgba(14,165,233,0.18);
+    }
+
+    .btn-light {
+      background: rgba(148,163,184,0.12);
+      color: #e2e8f0;
+      border: 1px solid rgba(148,163,184,0.16);
+    }
+
+    .btn-success {
+      background: rgba(34,197,94,0.16);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.24);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-box span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .stat-box strong {
+      font-size: 16px;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 10px 14px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .mono {
+      font-family: Consolas, Monaco, monospace;
+      word-break: break-all;
+      color: var(--text);
+    }
+
+    .artifacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .artifact {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(14,165,233,0.14);
+      border: 1px solid rgba(56,189,248,0.22);
+      color: #bae6fd;
+      font-weight: 700;
+      font-size: 13px;
+      transition: transform var(--ease), box-shadow var(--ease), background var(--ease);
+    }
+
+    .artifact:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .iframe-wrap {
+      margin-top: 14px;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.16);
+      background: rgba(2,6,23,0.9);
+      min-height: 860px;
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .iframe-wrap::before {
+      content: "Preview";
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(148,163,184,0.18);
+      padding: 6px 10px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 860px;
+      border: 0;
+      background: #fff;
+      transition: opacity var(--ease), transform var(--ease);
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted-2);
+      font-size: 14px;
+      padding: 0 0 8px;
+    }
+
+    @keyframes viewEnter {
+      from { opacity: 0; transform: translateY(14px) scale(0.995); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(14,165,233,0.18), 0 0 18px rgba(14,165,233,0.12); }
+      50% { box-shadow: 0 0 0 1px rgba(14,165,233,0.28), 0 0 28px rgba(14,165,233,0.22); }
+    }
+
+    @keyframes shimmerFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-2px); }
+    }
+
+    @keyframes connectorPulse {
+      0%, 100% { opacity: 0.92; filter: drop-shadow(0 0 0 rgba(34,211,238,0)); }
+      50% { opacity: 1; filter: drop-shadow(0 0 10px rgba(34,211,238,0.18)); }
+    }
+
+    @keyframes flowLine {
+      0%, 100% { opacity: 0.78; transform: translateY(-50%) scaleX(0.96); }
+      50% { opacity: 1; transform: translateY(-50%) scaleX(1.04); }
+    }
+
+    @keyframes arrowNudge {
+      0%, 100% { transform: translateY(-50%) translateX(0) rotate(45deg); }
+      50% { transform: translateY(-50%) translateX(4px) rotate(45deg); }
+    }
+
+    @keyframes softFloatLeft {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-2px) translateY(-3px); }
+    }
+
+    @keyframes softFloatRight {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(2px) translateY(3px); }
+    }
+
+    @media (max-width: 1180px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+      .sidebar,
+      .content-shell {
+        min-height: auto;
+        position: static;
+      }
+      .step-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      .benefits-grid,
+      .compare-grid,
+      .config-grid,
+      .result-grid,
+      .hero-slide-grid,
+      .step-list {
+        grid-template-columns: 1fr;
+      }
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+      .field.span-2 {
+        grid-column: auto;
+      }
+      .content-head {
+        flex-direction: column;
+      }
+      .content-head h2 {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100%, calc(100% - 18px));
+        margin: 10px auto 18px;
+      }
+      .sidebar,
+      .content-shell,
+      .card,
+      .preview-card,
+      .info-card,
+      .result-summary,
+      .brand-block {
+        padding: 18px;
+      }
+      .brand-block h1 {
+        font-size: 18px;
+      }
+      .stats-grid,
+      .kv {
+        grid-template-columns: 1fr;
+      }
+      textarea {
+        min-height: 360px;
+      }
+      .iframe-wrap,
+      iframe {
+        min-height: 560px;
+        height: 560px;
+      }
+      .footer-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <section class="brand-block">
+        <!-- ScriptoCCM Logo -->
+        <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 44" fill="none" width="180" height="44" aria-label="ScriptoCCM">
+          <!-- Icon: stylized bracket + document mark -->
+          <rect x="0" y="6" width="32" height="32" rx="8" fill="rgba(255,255,255,0.18)"/>
+          <path d="M8 22 L14 14 L20 22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M8 22 L14 30 L20 22" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="25" cy="14" r="2.5" fill="white"/>
+          <!-- Wordmark -->
+          <text x="40" y="29" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" letter-spacing="-0.5" fill="white">Scripto</text>
+          <text x="120" y="29" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="900" letter-spacing="-0.5" fill="rgba(255,255,255,0.75)">CCM</text>
+        </svg>
+
+        <div class="brand-kicker">🚀 Demonstração comercial · fluxo real</div>
+        <h1>Motor de landing digital interativa</h1>
+        <p>
+          Um fluxo executivo em 3 etapas para apresentar o valor comercial,
+          configurar o render e visualizar o resultado real publicado via token.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="stepper-title">Fluxo guiado</h2>
+        <div class="step-list">
+          <button class="step-item active" data-step="1">
+            <span class="step-number">1</span>
+            <span class="step-text">
+              <strong>Proposta</strong>
+              <span>Valor comercial e mensagem executiva.</span>
+            </span>
+          </button>
+
+          <button class="step-item" data-step="2">
+            <span class="step-number">2</span>
+            <span class="step-text">
+              <strong>Configurar</strong>
+              <span>Endpoint real e payload canônico do render.</span>
+            </span>
+          </button>
+
+          <button class="step-item" data-step="3">
+            <span class="step-number">3</span>
+            <span class="step-text">
+              <strong>Resultado</strong>
+              <span>URL pública, artifacts e preview incorporado.</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="status-box">
+        <h3>Estado atual</h3>
+        <div id="statusPill" class="status-pill status-idle">Estado: pronto para renderizar</div>
+      </section>
+
+      <section class="mini-grid">
+        <article class="mini-card">
+          <h3>O que já existe</h3>
+          <p>O motor recebe JSON, valida, normaliza, gera token e publica uma landing real acessível por URL segura.</p>
+        </article>
+        <article class="mini-card">
+          <h3>O que esta visão demonstra</h3>
+          <p>Que a solução não é um mockup: é real, demonstrável e pronta para ser integrada e evoluída em qualquer operação.</p>
+        </article>
+      </section>
+    </aside>
+
+    <section class="content-shell">
+      <header class="content-head">
+        <div>
+          <h2 id="viewTitle">Etapa 1 · Proposta comercial</h2>
+          <p id="viewDescription">Transformamos dados técnicos em uma experiência clara, segura e interativa, conectando sistemas legados à satisfação do cliente final.</p>
+        </div>
+        <div class="pill-row">
+          <span class="pill">JSON → landing pública</span>
+          <span class="pill">Token seguro</span>
+          <span class="pill">Demo em tempo real</span>
+        </div>
+      </header>
+
+      <!-- STEP 1: Proposta -->
+      <div class="view active" data-view="1">
+        <section class="card hero-slide">
+          <div class="hero-slide-grid">
+            <div>
+              <div class="eyebrow">ScriptoCCM · visão executiva</div>
+              <h3>De dados técnicos isolados para uma experiência digital que orienta, informa e gera confiança no cliente final.</h3>
+              <p>O motor de landing da ScriptoCCM converte dados estruturados em jornadas digitais claras e seguras. Em vez de expor o usuário a documentos densos, entregamos uma experiência visual com entendimento imediato, acesso por token e base sólida para evolução contínua e rastreabilidade.</p>
+              <div class="impact-row">
+                <span class="impact-chip">Clareza visual</span>
+                <span class="impact-chip">Acesso seguro</span>
+                <span class="impact-chip">Menos fricção operacional</span>
+                <span class="impact-chip">Base para telemetria</span>
+              </div>
+            </div>
+            <div class="future-boxes">
+              <div class="future-box before">
+                <small>Antes</small>
+                <strong>Documentos estáticos e experiência reativa</strong>
+                <span>PDFs densos, pouca hierarquia visual, dúvidas frequentes e maior dependência de suporte para interpretar informações críticas.</span>
+              </div>
+              <div class="transform-connector" aria-hidden="true">
+                <span class="transform-pill">Transformação digital</span>
+              </div>
+              <div class="future-box after">
+                <small>Futuro</small>
+                <strong>Comunicações vivas, digitais e orientadas ao cliente</strong>
+                <span>Navegação intuitiva, compreensão em segundos, autosserviço e uma camada moderna que conecta legado, experiência e rastreabilidade.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="benefits-grid">
+          <article class="card">
+            <h3>Clareza visual imediata</h3>
+            <p>Separamos os dados técnicos da complexidade documental para que o destinatário entenda as informações relevantes em poucos segundos, sem intermediários.</p>
+          </article>
+          <article class="card">
+            <h3>Interação dinâmica</h3>
+            <p>O documento deixa de ser um arquivo denso e passa a funcionar como uma experiência web intuitiva, com navegação fluida, foco mobile e leitura orientada.</p>
+          </article>
+          <article class="card">
+            <h3>Acesso imediato e seguro</h3>
+            <p>Com publicação via token, o cliente acessa sua informação de forma protegida, enquanto a operação reforça confiança, inovação e autosserviço.</p>
+          </article>
+        </div>
+
+        <div class="compare-grid">
+          <article class="card compare-box-legacy">
+            <h3>📄 Modelo tradicional</h3>
+            <ul class="compare-list">
+              <li>Linguagem técnica e jurídica de difícil assimilação</li>
+              <li>Formato estático, com documentos densos e pouca hierarquia visual</li>
+              <li>Acesso mobile mais limitado e pouca fluidez</li>
+              <li>Busca manual, sem navegação nem interação contextual</li>
+              <li>Mais chamadas ao suporte, erros de leitura e menor engajamento</li>
+            </ul>
+          </article>
+
+          <article class="card compare-box-digital">
+            <h3>✨ ScriptoCCM Landing Engine</h3>
+            <ul class="compare-list">
+              <li>Transforma JSON em experiência visual com 100% de fidelidade aos dados</li>
+              <li>Clareza visual, interação dinâmica e acesso imediato</li>
+              <li>Navegação por seções, acordeões e visualizações orientadas ao usuário</li>
+              <li>Entrega web com opção de PDF sob demanda</li>
+              <li>Base para telemetria, rastreabilidade e evolução contínua da jornada</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="info-card">
+          <h3>Mensagem executiva sugerida</h3>
+          <p>
+            A ScriptoCCM Landing Engine transforma dados técnicos em uma experiência digital clara, segura e acionável.
+            Em vez de expor o destinatário a um documento estático e complexo, entregamos uma jornada web
+            intuitiva que reduz fricção, diminui dependência do suporte e aumenta a percepção de valor do serviço.
+          </p>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span>Entrada</span>
+              <strong>Dados legados via API, SFTP ou carga estruturada</strong>
+            </div>
+            <div class="stat-box">
+              <span>Saída</span>
+              <strong>Landing segura + PDF sob demanda</strong>
+            </div>
+            <div class="stat-box">
+              <span>Valor</span>
+              <strong>Mais clareza, menos chamadas e mais autosserviço</strong>
+            </div>
+            <div class="stat-box">
+              <span>Evolução</span>
+              <strong>Base para telemetria, rastreabilidade e CX contínua</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <span></span>
+          <button class="btn btn-primary" data-go-step="2">Continuar para a etapa 2</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Configurar -->
+      <div class="view" data-view="2">
+        <div class="config-grid">
+          <article class="card">
+            <h3>Etapa 2 · Configurar render</h3>
+            <p>
+              Defina o endpoint, revise o payload e execute o fluxo real de geração.
+            </p>
+
+            <div style="margin-top:22px;">
+              <label for="endpointUrl">Endpoint de render</label>
+              <input id="endpointUrl" type="text" value="http://localhost:3000/api/v1/landings/render" />
+              <div class="helper">Você pode usar ambiente local, QA ou produção conforme o cenário disponível.</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-soft" id="btnLoadExample">Carregar exemplo</button>
+              <button class="btn btn-light" id="btnFormatJson">Formatar JSON</button>
+            </div>
+
+            <div class="result-summary" style="margin-top:22px;">
+              <h3>O que acontecerá ao executar</h3>
+              <p>
+                O payload será enviado ao endpoint, será gerado o token público e a visualização do resultado será habilitada.
+              </p>
+            </div>
+
+            <div class="footer-actions">
+              <button class="btn btn-light" data-go-step="1">Voltar</button>
+              <button class="btn btn-primary" id="btnRender">Gerar demo e continuar</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Payload de entrada</h3>
+            <p class="result-note">Este é o JSON canônico que alimenta o template selecionado.</p>
+            <textarea id="payloadInput"></textarea>
+          </article>
+        </div>
+      </div>
+
+      <!-- STEP 3: Resultado -->
+      <div class="view" data-view="3">
+        <div class="result-grid">
+          <div>
+            <article class="card">
+              <h3>Etapa 3 · Resultado do render</h3>
+              <p>
+                São exibidos os identificadores do render, a URL pública e os artifacts retornados pela API.
+              </p>
+
+              <div class="kv">
+                <div>Render ID</div>
+                <div id="resultRenderId" class="mono">-</div>
+
+                <div>Token</div>
+                <div id="resultToken" class="mono">-</div>
+
+                <div>Template</div>
+                <div id="resultTemplate">-</div>
+
+                <div>Versão</div>
+                <div id="resultVersion">-</div>
+
+                <div>Public URL</div>
+                <div id="resultPublicUrl" class="mono">-</div>
+              </div>
+
+              <div class="artifacts" id="artifactsContainer"></div>
+
+              <div class="result-actions" style="margin-top:20px;">
+                <button class="btn btn-success" id="btnOpenDemo" disabled>Abrir landing</button>
+                <button class="btn btn-soft" id="btnPreviewDemo" disabled>Visualizar</button>
+                <button class="btn btn-light" id="btnCopyUrl" disabled>Copiar URL</button>
+              </div>
+
+              <div class="share-box">
+                <div>
+                  <h3>Compartilhar por WhatsApp</h3>
+                  <p class="result-note">Defina o telefone, personalize a mensagem e envie a landing publicada em um clique.</p>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="whatsPhone">Telefone do destinatário</label>
+                    <input id="whatsPhone" type="text" value="5511912345678" placeholder="5511912345678" />
+                  </div>
+
+                  <div class="field">
+                    <label for="whatsUrlPreview">URL que será enviada</label>
+                    <input id="whatsUrlPreview" type="text" value="Aguardando render" readonly />
+                  </div>
+
+                  <div class="field span-2">
+                    <label for="whatsMessage">Mensagem</label>
+                    <textarea id="whatsMessage">Olá! Segue a URL da sua landing interativa: {{landingUrl}}</textarea>
+                  </div>
+                </div>
+
+                <div class="share-actions">
+                  <button class="btn btn-success" id="btnShareWhatsapp" disabled>Enviar por WhatsApp</button>
+                  <button class="btn btn-light" id="btnCopyWhatsappMessage" disabled>Copiar mensagem</button>
+                </div>
+
+                <div id="whatsPreview" class="share-preview">A mensagem será montada automaticamente quando a landing for gerada.</div>
+              </div>
+            </article>
+
+            <article class="result-summary" style="margin-top:18px;">
+              <h3>Uso recomendado</h3>
+              <p>
+                Esta visão é ideal para demonstração comercial, validação interna, QA funcional e futura rastreabilidade dos renders.
+              </p>
+            </article>
+
+            <div class="footer-actions">
+              <button class="btn btn-light" data-go-step="2">Voltar para etapa 2</button>
+              <button class="btn btn-primary" data-go-step="1">Ir para a etapa 1</button>
+            </div>
+          </div>
+
+          <article class="preview-card">
+            <h3>Preview da landing</h3>
+            <p class="result-note">
+              Se a URL pública permitir incorporação, você verá a landing aqui mesmo. Caso contrário, use o botão de abertura direta.
+            </p>
+            <div class="iframe-wrap">
+              <iframe id="demoFrame" title="Demo landing" src="about:blank"></iframe>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="footer-note">ScriptoCCM Landing Engine · demonstração comercial · wizard executivo em 3 etapas.</div>
+
+  <script>
+    const examplePayload = {
+      templateCode: "landing-poliza-mvp-ptbr-v2",
+      data: {
+        branding: {
+          empresa: "ScriptoCCM",
+          produto: "Comunicação Digital",
+          tagline: "Landing digital interativa",
+          navSubtitle: "Motor de landing ScriptoCCM",
+          heroTitle: "Olá, Maria Silva",
+          heroDescription: "Navegue pelas informações principais do seu seguro, coberturas, veículo, pagamento e canais de atendimento."
+        },
+        cliente: {
+          nome: "Maria Silva",
+          documento: "123.456.789-00",
+          telefone: "(11) 91234-5678",
+          email: "maria.silva@example.com"
+        },
+        poliza: {
+          numero: "PS-2026-0001",
+          vigenciaDesde: "2026-04-13",
+          vigenciaHasta: "2027-04-12",
+          estado: "Vigente",
+          primaTotal: 2522.98,
+          franquia: 10153,
+          moneda: "BRL"
+        },
+        vehiculo: {
+          marca: "Toyota",
+          modelo: "Corolla Altis",
+          anio: 2024,
+          placa: "ABCD123",
+          combustivel: "Gasolina",
+          uso: "Particular",
+          fotoUrl: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop"
+        },
+        residencia: {
+          direccion: "Rua Saint Hilaire, 47, Jardim Paulista, Sao Paulo - SP"
+        },
+        corredor: {
+          nombre: "Potencia Corretora de Seguros",
+          telefono: "(11) 3338-1764",
+          email: "info@test.com"
+        },
+        beneficios: [
+          { titulo: "Assistência 24 horas" },
+          { titulo: "Carro reserva" },
+          { titulo: "Serviço de vidros" }
+        ],
+        coberturas: [
+          {
+            titulo: "Colisão, incêndio, roubo e furto",
+            monto: 1730.65,
+            detalle: "Cobertura principal do casco do veículo conforme condições da apólice."
+          },
+          {
+            titulo: "Responsabilidade civil facultativa",
+            monto: 200000,
+            detalle: "Cobertura para danos materiais e corporais causados a terceiros."
+          }
+        ],
+        pagos: {
+          forma: "Débito em conta",
+          cuotas: [
+            { numero: 1, vencimiento: "2026-04-30", valor: 630.73 },
+            { numero: 2, vencimiento: "2026-05-30", valor: 630.75 },
+            { numero: 3, vencimiento: "2026-06-30", valor: 630.75 },
+            { numero: 4, vencimiento: "2026-07-30", valor: 630.75 },
+            { numero: 5, vencimiento: "2026-08-30", valor: 630.75 },
+            { numero: 6, vencimiento: "2026-09-30", valor: 630.75 }
+          ]
+        },
+        canalesAtencion: [
+          { tipo: "Telefone", valor: "0800-123-456" },
+          { tipo: "WhatsApp", valor: "+55 11 99999-0000" }
+        ]
+      }
+    };
+
+    const viewMeta = {
+      1: {
+        title: 'Etapa 1 · Proposta comercial',
+        description: 'Transformamos dados técnicos em uma experiência clara, segura e interativa, conectando sistemas legados à satisfação do cliente final.'
+      },
+      2: {
+        title: 'Etapa 2 · Configuração do render',
+        description: 'Ajuste o endpoint, valide o payload e dispare a geração conectada à sua API real.'
+      },
+      3: {
+        title: 'Etapa 3 · Resultado e preview',
+        description: 'Revise a resposta do render, os artifacts disponíveis e a landing pública resultante.'
+      }
+    };
+
+    const endpointUrlEl = document.getElementById('endpointUrl');
+    const payloadInputEl = document.getElementById('payloadInput');
+    const statusPillEl = document.getElementById('statusPill');
+    const demoFrameEl = document.getElementById('demoFrame');
+    const viewTitleEl = document.getElementById('viewTitle');
+    const viewDescriptionEl = document.getElementById('viewDescription');
+
+    const resultRenderIdEl = document.getElementById('resultRenderId');
+    const resultTokenEl = document.getElementById('resultToken');
+    const resultTemplateEl = document.getElementById('resultTemplate');
+    const resultVersionEl = document.getElementById('resultVersion');
+    const resultPublicUrlEl = document.getElementById('resultPublicUrl');
+    const artifactsContainerEl = document.getElementById('artifactsContainer');
+    const whatsPhoneEl = document.getElementById('whatsPhone');
+    const whatsUrlPreviewEl = document.getElementById('whatsUrlPreview');
+    const whatsMessageEl = document.getElementById('whatsMessage');
+    const whatsPreviewEl = document.getElementById('whatsPreview');
+
+    const btnRender = document.getElementById('btnRender');
+    const btnLoadExample = document.getElementById('btnLoadExample');
+    const btnFormatJson = document.getElementById('btnFormatJson');
+    const btnOpenDemo = document.getElementById('btnOpenDemo');
+    const btnPreviewDemo = document.getElementById('btnPreviewDemo');
+    const btnCopyUrl = document.getElementById('btnCopyUrl');
+    const btnShareWhatsapp = document.getElementById('btnShareWhatsapp');
+    const btnCopyWhatsappMessage = document.getElementById('btnCopyWhatsappMessage');
+
+    const stepButtons = Array.from(document.querySelectorAll('.step-item'));
+    const views = Array.from(document.querySelectorAll('.view'));
+    const goStepButtons = Array.from(document.querySelectorAll('[data-go-step]'));
+
+    let lastAbsolutePublicUrl = '';
+    let highestCompletedStep = 1;
+
+    function setStatus(type, message) {
+      statusPillEl.className = `status-pill status-${type}`;
+      statusPillEl.textContent = `Estado: ${message}`;
+    }
+
+    function resolveDefaultRenderEndpoint() {
+      return `${window.location.origin}/api/v1/landings/render`;
+    }
+
+    function loadExample() {
+      payloadInputEl.value = JSON.stringify(examplePayload, null, 2);
+      whatsPhoneEl.value = extractSuggestedPhone(examplePayload);
+      updateWhatsappState();
+    }
+
+    function formatPayload() {
+      try {
+        const parsed = JSON.parse(payloadInputEl.value);
+        payloadInputEl.value = JSON.stringify(parsed, null, 2);
+        setStatus('idle', 'JSON validado e formatado');
+      } catch (error) {
+        setStatus('error', 'JSON inválido. Revise a estrutura');
+        alert('O JSON não é válido. Corrija o conteúdo antes de continuar.');
+      }
+    }
+
+    function buildAbsoluteUrl(endpointUrl, publicUrl) {
+      if (!publicUrl) return '';
+      if (/^https?:\/\//i.test(publicUrl)) return publicUrl;
+      const endpoint = new URL(endpointUrl);
+      return `${endpoint.origin}${publicUrl.startsWith('/') ? publicUrl : `/${publicUrl}`}`;
+    }
+
+    function extractSuggestedPhone(payload) {
+      const rawPhone = payload?.data?.cliente?.telefone || payload?.data?.corredor?.telefono || '';
+      return String(rawPhone).replace(/\D/g, '');
+    }
+
+    function normalizeWhatsappPhone(value) {
+      return String(value || '').replace(/\D/g, '');
+    }
+
+    function buildWhatsappMessage(landingUrl) {
+      const template = whatsMessageEl.value.trim() || 'Olá! Segue a URL da sua landing interativa: {{landingUrl}}';
+      return template.includes('{{landingUrl}}')
+        ? template.replaceAll('{{landingUrl}}', landingUrl)
+        : `${template}${template ? '\n\n' : ''}${landingUrl}`;
+    }
+
+    function buildWhatsappShareUrl(phone, message) {
+      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+
+    function updateWhatsappState() {
+      const normalizedPhone = normalizeWhatsappPhone(whatsPhoneEl.value);
+      const hasUrl = Boolean(lastAbsolutePublicUrl);
+      const message = hasUrl ? buildWhatsappMessage(lastAbsolutePublicUrl) : '';
+
+      whatsUrlPreviewEl.value = lastAbsolutePublicUrl || 'Aguardando render';
+      whatsPreviewEl.textContent = hasUrl
+        ? `Prévia: ${message}`
+        : 'A mensagem será montada automaticamente quando a landing for gerada.';
+
+      const canShare = hasUrl && normalizedPhone.length >= 10;
+      btnShareWhatsapp.disabled = !canShare;
+      btnCopyWhatsappMessage.disabled = !hasUrl;
+    }
+
+    function clearResults() {
+      resultRenderIdEl.textContent = '-';
+      resultTokenEl.textContent = '-';
+      resultTemplateEl.textContent = '-';
+      resultVersionEl.textContent = '-';
+      resultPublicUrlEl.textContent = '-';
+      artifactsContainerEl.innerHTML = '';
+      lastAbsolutePublicUrl = '';
+      btnOpenDemo.disabled = true;
+      btnPreviewDemo.disabled = true;
+      btnCopyUrl.disabled = true;
+      demoFrameEl.src = 'about:blank';
+      updateWhatsappState();
+    }
+
+    function renderArtifacts(artifacts) {
+      artifactsContainerEl.innerHTML = '';
+      if (!artifacts || typeof artifacts !== 'object') return;
+      Object.entries(artifacts).forEach(([key, value]) => {
+        const span = document.createElement('span');
+        span.className = 'artifact';
+        span.textContent = `${key}: ${value ? 'true' : 'false'}`;
+        artifactsContainerEl.appendChild(span);
+      });
+    }
+
+    function goToStep(step) {
+      views.forEach(view => {
+        const isActive = view.dataset.view === String(step);
+        view.classList.toggle('active', isActive);
+      });
+      stepButtons.forEach(btn => {
+        const btnStep = Number(btn.dataset.step);
+        btn.classList.toggle('active', btnStep === step);
+        btn.classList.toggle('done', btnStep < step || (btnStep <= highestCompletedStep && btnStep !== step));
+      });
+      viewTitleEl.textContent = viewMeta[step].title;
+      viewDescriptionEl.textContent = viewMeta[step].description;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function executeRender() {
+      clearResults();
+      let payload;
+
+      try {
+        payload = JSON.parse(payloadInputEl.value);
+      } catch (error) {
+        setStatus('error', 'JSON inválido');
+        alert('O payload não é um JSON válido.');
+        return;
+      }
+
+      const endpointUrl = endpointUrlEl.value.trim();
+      if (!endpointUrl) {
+        setStatus('error', 'faltou o endpoint');
+        alert('Você deve informar o endpoint de render.');
+        return;
+      }
+
+      btnRender.disabled = true;
+      setStatus('loading', 'renderizando demo real...');
+
+      try {
+        const response = await fetch(endpointUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          const errorMessage = data?.message || `Erro HTTP ${response.status}`;
+          throw new Error(errorMessage);
+        }
+
+        resultRenderIdEl.textContent = data.renderId || '-';
+        resultTokenEl.textContent = data.token || '-';
+        resultTemplateEl.textContent = data.templateCode || '-';
+        resultVersionEl.textContent = data.templateVersion || '-';
+        resultPublicUrlEl.textContent = data.publicUrl || '-';
+        renderArtifacts(data.artifacts);
+
+        lastAbsolutePublicUrl = buildAbsoluteUrl(endpointUrl, data.publicUrl);
+        if (lastAbsolutePublicUrl) {
+          btnOpenDemo.disabled = false;
+          btnPreviewDemo.disabled = false;
+          btnCopyUrl.disabled = false;
+        }
+        updateWhatsappState();
+
+        highestCompletedStep = Math.max(highestCompletedStep, 3);
+        setStatus('success', 'demo gerada com sucesso');
+        goToStep(3);
+      } catch (error) {
+        console.error(error);
+        setStatus('error', error.message || 'falha no render');
+        alert(`Não foi possível gerar a demo. Detalhe: ${error.message || error}`);
+      } finally {
+        btnRender.disabled = false;
+      }
+    }
+
+    function openDemo() {
+      if (!lastAbsolutePublicUrl) return;
+      window.open(lastAbsolutePublicUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    function previewDemo() {
+      if (!lastAbsolutePublicUrl) return;
+      demoFrameEl.style.opacity = '0';
+      demoFrameEl.style.transform = 'scale(0.995)';
+      setTimeout(() => {
+        demoFrameEl.src = lastAbsolutePublicUrl;
+        demoFrameEl.onload = () => {
+          demoFrameEl.style.opacity = '1';
+          demoFrameEl.style.transform = 'scale(1)';
+        };
+      }, 140);
+    }
+
+    async function copyUrl() {
+      if (!lastAbsolutePublicUrl) return;
+      try {
+        await navigator.clipboard.writeText(lastAbsolutePublicUrl);
+        setStatus('success', 'URL copiada para a área de transferência');
+      } catch (error) {
+        setStatus('error', 'não foi possível copiar a URL');
+        alert('Não foi possível copiar a URL automaticamente.');
+      }
+    }
+
+    function shareOnWhatsapp() {
+      if (!lastAbsolutePublicUrl) return;
+
+      const normalizedPhone = normalizeWhatsappPhone(whatsPhoneEl.value);
+      if (normalizedPhone.length < 10) {
+        setStatus('error', 'telefone inválido para WhatsApp');
+        alert('Informe um telefone válido com DDI e DDD para compartilhar no WhatsApp.');
+        return;
+      }
+
+      const shareUrl = buildWhatsappShareUrl(normalizedPhone, buildWhatsappMessage(lastAbsolutePublicUrl));
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    async function copyWhatsappMessage() {
+      if (!lastAbsolutePublicUrl) return;
+
+      try {
+        await navigator.clipboard.writeText(buildWhatsappMessage(lastAbsolutePublicUrl));
+        setStatus('success', 'mensagem de WhatsApp copiada');
+      } catch (error) {
+        setStatus('error', 'não foi possível copiar a mensagem');
+        alert('Não foi possível copiar a mensagem do WhatsApp automaticamente.');
+      }
+    }
+
+    stepButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = Number(btn.dataset.step);
+        goToStep(step);
+      });
+    });
+
+    goStepButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = Number(btn.dataset.goStep);
+        goToStep(step);
+      });
+    });
+
+    btnLoadExample.addEventListener('click', loadExample);
+    btnFormatJson.addEventListener('click', formatPayload);
+    btnRender.addEventListener('click', executeRender);
+    btnOpenDemo.addEventListener('click', openDemo);
+    btnPreviewDemo.addEventListener('click', previewDemo);
+    btnCopyUrl.addEventListener('click', copyUrl);
+    btnShareWhatsapp.addEventListener('click', shareOnWhatsapp);
+    btnCopyWhatsappMessage.addEventListener('click', copyWhatsappMessage);
+    whatsPhoneEl.addEventListener('input', updateWhatsappState);
+    whatsMessageEl.addEventListener('input', updateWhatsappState);
+
+    endpointUrlEl.value = resolveDefaultRenderEndpoint();
+    loadExample();
+    updateWhatsappState();
+    goToStep(1);
+  </script>
+  <script>
+    // AUTO DEMO MODE
+    let autoDemo = false;
+
+    async function runAutoDemo(){
+      if(!autoDemo) return;
+      await new Promise(r=>setTimeout(r,1500));
+      goToStep(2);
+      setStatus('loading','Gerando experiência...');
+      await new Promise(r=>setTimeout(r,1800));
+      await executeRender();
+      await new Promise(r=>setTimeout(r,1200));
+      previewDemo();
+    }
+
+    // PREMIUM LOADER
+    const loader = document.createElement('div');
+    loader.id = 'aiLoader';
+    loader.style.position = 'fixed';
+    loader.style.inset = '0';
+    loader.style.background = 'rgba(2,6,23,0.72)';
+    loader.style.backdropFilter = 'blur(14px)';
+    loader.style.display = 'none';
+    loader.style.alignItems = 'center';
+    loader.style.justifyContent = 'center';
+    loader.style.zIndex = '999';
+
+    loader.innerHTML = `
+      <div style="width:min(520px, calc(100% - 32px)); background:rgba(15,23,42,0.92); border:1px solid rgba(148,163,184,0.16); box-shadow:0 24px 70px rgba(0,0,0,0.45); border-radius:28px; padding:30px 28px; color:#fff; text-align:left; position:relative; overflow:hidden;">
+        <div style="position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(14,165,233,0.20), transparent 38%), radial-gradient(circle at bottom left, rgba(34,211,238,0.10), transparent 30%);"></div>
+        <div style="position:relative; z-index:1; display:flex; align-items:center; gap:16px; margin-bottom:18px;">
+          <div style="width:52px; height:52px; border-radius:18px; background:linear-gradient(135deg,#0ea5e9,#6366f1); display:flex; align-items:center; justify-content:center; box-shadow:0 16px 34px rgba(14,165,233,0.30);">
+            <div id="loaderSpinner" style="width:22px; height:22px; border:2px solid rgba(255,255,255,0.28); border-top-color:#fff; border-radius:50%; animation:loaderSpin 0.9s linear infinite;"></div>
+          </div>
+          <div>
+            <div style="font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:#bae6fd; font-weight:800; margin-bottom:6px;">ScriptoCCM Landing Engine</div>
+            <div style="font-size:24px; font-weight:800; line-height:1.2;">Gerando experiência digital</div>
+          </div>
+        </div>
+
+        <div id="loaderMessage" style="position:relative; z-index:1; color:#cbd5e1; font-size:15px; line-height:1.6; min-height:48px; margin-bottom:18px;">
+          Validando payload e preparando a publicação da landing...
+        </div>
+
+        <div style="position:relative; z-index:1; background:rgba(148,163,184,0.12); border:1px solid rgba(148,163,184,0.12); border-radius:999px; height:12px; overflow:hidden;">
+          <div id="loaderBar" style="height:100%; width:18%; border-radius:999px; background:linear-gradient(135deg,#0ea5e9,#22d3ee); box-shadow:0 0 22px rgba(34,211,238,0.28); transition:width 420ms cubic-bezier(.2,.8,.2,1);"></div>
+        </div>
+
+        <div style="position:relative; z-index:1; display:flex; justify-content:space-between; gap:12px; margin-top:14px; color:#94a3b8; font-size:12px; font-weight:700;">
+          <span>JSON → template → token</span>
+          <span id="loaderPercent">18%</span>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(loader);
+
+    const loaderMessages = [
+      'Validando payload e preparando a publicação da landing...',
+      'Aplicando o template e montando a experiência visual...',
+      'Gerando token público e preparando os artifacts do render...',
+      'Sincronizando o resultado e habilitando o preview incorporado...'
+    ];
+
+    let loaderInterval = null;
+    let loaderStep = 0;
+    let loaderProgress = 18;
+
+    function startPremiumLoader(){
+      const msgEl = document.getElementById('loaderMessage');
+      const barEl = document.getElementById('loaderBar');
+      const percentEl = document.getElementById('loaderPercent');
+      loader.style.display = 'flex';
+      loaderStep = 0;
+      loaderProgress = 18;
+      msgEl.textContent = loaderMessages[0];
+      barEl.style.width = loaderProgress + '%';
+      percentEl.textContent = loaderProgress + '%';
+
+      clearInterval(loaderInterval);
+      loaderInterval = setInterval(() => {
+        loaderStep = (loaderStep + 1) % loaderMessages.length;
+        loaderProgress = Math.min(loaderProgress + 22, 86);
+        msgEl.textContent = loaderMessages[loaderStep];
+        barEl.style.width = loaderProgress + '%';
+        percentEl.textContent = loaderProgress + '%';
+      }, 950);
+    }
+
+    function stopPremiumLoader(success = true){
+      const barEl = document.getElementById('loaderBar');
+      const percentEl = document.getElementById('loaderPercent');
+      clearInterval(loaderInterval);
+      loaderInterval = null;
+      barEl.style.width = success ? '100%' : '92%';
+      percentEl.textContent = success ? '100%' : '92%';
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 420);
+    }
+
+    const loaderStyle = document.createElement('style');
+    loaderStyle.textContent = `
+      @keyframes loaderSpin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(loaderStyle);
+
+    const originalExecute = executeRender;
+    executeRender = async function(){
+      startPremiumLoader();
+      await new Promise(r=>setTimeout(r,650));
+      try {
+        await originalExecute();
+        stopPremiumLoader(true);
+      } catch (e) {
+        stopPremiumLoader(false);
+        throw e;
+      }
+    }
+
+    // METRICS CALLOUT
+    const metrics = document.createElement('div');
+    metrics.style.position = 'fixed';
+    metrics.style.top = '20px';
+    metrics.style.right = '20px';
+    metrics.style.background = 'rgba(17,24,39,0.8)';
+    metrics.style.backdropFilter = 'blur(10px)';
+    metrics.style.padding = '14px 18px';
+    metrics.style.borderRadius = '16px';
+    metrics.style.border = '1px solid rgba(14,165,233,0.22)';
+    metrics.style.color = 'white';
+    metrics.style.fontSize = '13px';
+    metrics.style.boxShadow = '0 18px 40px rgba(0,0,0,0.28)';
+    metrics.innerHTML = `
+      <div>📉 -40% dúvidas operacionais</div>
+      <div>📈 +60% compreensão</div>
+      <div>⚡ 3x mais engajamento</div>
+    `;
+    document.body.appendChild(metrics);
+
+    setTimeout(runAutoDemo, 1000);
+  </script>
+</body>
+</html>

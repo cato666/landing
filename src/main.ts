@@ -2,11 +2,19 @@ import 'reflect-metadata';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { validateRuntimeConfig } from './common/config/runtime-config';
+import { GlobalExceptionFilter } from './common/observability/global-exception.filter';
+import { LoggingInterceptor } from './common/observability/logging.interceptor';
 
 async function bootstrap() {
+  validateRuntimeConfig(process.env);
+
   const app = await NestFactory.create(AppModule, {
     cors: true,
   });
+
+  app.useGlobalFilters(app.get(GlobalExceptionFilter));
+  app.useGlobalInterceptors(app.get(LoggingInterceptor));
 
   app.setGlobalPrefix('api/v1');
 

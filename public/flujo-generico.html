@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Genérico · ScriptoCCM Landing Engine</title>
+  <style>
+    :root {
+      --bg: #06111f;
+      --card: rgba(15, 23, 42, 0.92);
+      --text: #f8fafc;
+      --muted: #c7d2fe;
+      --muted-2: #cbd5e1;
+      --primary: #0ea5e9;
+      --accent: #22d3ee;
+      --border: rgba(148, 163, 184, 0.18);
+      --success: #22c55e;
+      --success-soft: rgba(34, 197, 94, 0.14);
+      --success-border: rgba(34, 197, 94, 0.28);
+      --shadow: 0 24px 70px rgba(0,0,0,.45);
+      --radius: 22px;
+      --ease: 220ms cubic-bezier(.2,.8,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(14,165,233,.18), transparent 26%),
+        radial-gradient(circle at 88% 8%, rgba(34,211,238,.14), transparent 22%),
+        linear-gradient(180deg, #0a1222 0%, #020617 100%);
+      color: var(--text);
+    }
+
+    /* ─── app wrapper ─────────────────────────────────────── */
+    .app {
+      width: min(1180px, calc(100% - 20px));
+      margin: 0 auto;
+      padding: 24px 0 48px;
+    }
+
+    /* ─── header ──────────────────────────────────────────── */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .logo-row { display: flex; align-items: center; gap: 14px; }
+    .logo-icon {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary), #6366f1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .app-name  { font-size: 18px; font-weight: 900; letter-spacing: -.02em; }
+    .app-sub   { font-size: 13px; color: var(--muted-2); margin-top: 2px; }
+
+    /* ─── progress ────────────────────────────────────────── */
+    .progress-track { display: flex; align-items: center; }
+    .prog-step {
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; padding: 8px 16px 8px 10px;
+      border-radius: 999px; border: none; background: none; color: var(--text);
+      transition: background var(--ease);
+    }
+    .prog-step:hover { background: rgba(148,163,184,.08); }
+    .prog-num {
+      width: 30px; height: 30px; border-radius: 50%; font-size: 13px; font-weight: 900;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      background: rgba(148,163,184,.14);
+      transition: background var(--ease), box-shadow var(--ease);
+    }
+    .prog-label { font-size: 13px; font-weight: 700; color: var(--muted-2); white-space: nowrap; }
+    .prog-step.active .prog-num   { background: linear-gradient(135deg, var(--primary), #6366f1); color: #fff; box-shadow: 0 6px 20px rgba(14,165,233,.36); }
+    .prog-step.active .prog-label { color: var(--text); }
+    .prog-step.done .prog-num     { background: var(--success); color: #fff; }
+    .prog-connector { width: 32px; height: 2px; background: var(--border); flex-shrink: 0; }
+
+    /* ─── screens ─────────────────────────────────────────── */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeUp .3s var(--ease) both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── cards ───────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .card-title { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px; }
+    .card-sub   { font-size: 14px; color: var(--muted-2); line-height: 1.6; margin-bottom: 20px; }
+
+    /* ─── buttons ─────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 22px; border-radius: 12px; font-weight: 800; font-size: 14px;
+      cursor: pointer; border: none; outline: none; white-space: nowrap;
+      transition: transform var(--ease), box-shadow var(--ease), opacity var(--ease), background var(--ease);
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,.28); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), #6366f1); color: #fff; box-shadow: 0 8px 24px rgba(14,165,233,.32); }
+    .btn-success { background: var(--success-soft); color: #bbf7d0; border: 1px solid var(--success-border); }
+    .btn-success:hover:not(:disabled) { background: rgba(34,197,94,.22); }
+    .btn-ghost   { background: rgba(148,163,184,.10); color: #e2e8f0; border: 1px solid rgba(148,163,184,.16); }
+
+    /* ─── step 1 ──────────────────────────────────────────── */
+    .step1-layout { display: grid; gap: 20px; }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+    .preset-card {
+      border: 1px solid var(--border); border-radius: 16px; padding: 20px;
+      cursor: pointer; background: rgba(15,23,42,.6); text-align: left;
+      transition: border-color var(--ease), background var(--ease), transform var(--ease), box-shadow var(--ease);
+    }
+    .preset-card:hover {
+      border-color: rgba(14,165,233,.4); background: rgba(14,165,233,.08);
+      transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,.24);
+    }
+    .preset-card.selected {
+      border-color: var(--primary); background: rgba(14,165,233,.14);
+      box-shadow: 0 0 0 1px rgba(14,165,233,.22), 0 12px 28px rgba(14,165,233,.16);
+    }
+    .preset-icon  { font-size: 26px; margin-bottom: 12px; display: block; }
+    .preset-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+    .preset-desc  { font-size: 13px; color: var(--muted-2); line-height: 1.5; }
+
+    .field-label  { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+    .editor-label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+
+    input.text-input {
+      width: 100%; padding: 13px 16px; background: rgba(2,6,23,.5);
+      border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-size: 14px;
+      outline: none; transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    input.text-input:focus { border-color: rgba(14,165,233,.44); box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+
+    .editor-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .editor-btns    { display: flex; gap: 8px; }
+    .editor-btns .btn { padding: 8px 14px; font-size: 12px; border-radius: 8px; }
+
+    textarea.json-area {
+      width: 100%; min-height: 300px; padding: 16px;
+      background: rgba(2,6,23,.6); border: 1px solid var(--border); border-radius: 14px;
+      color: var(--text); font-family: Consolas, Monaco, monospace; font-size: 13px;
+      line-height: 1.6; resize: vertical; outline: none;
+      transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    textarea.json-area:focus { border-color: rgba(14,165,233,.44); box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+
+    .status-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 999px; font-weight: 800; font-size: 13px;
+    }
+    .s-idle    { background: rgba(148,163,184,.12); color: #e2e8f0; }
+    .s-loading { background: rgba(14,165,233,.18); color: #bae6fd; animation: pulseSoft 1.6s ease-in-out infinite; }
+    .s-ok      { background: rgba(34,197,94,.16);  color: #bbf7d0; }
+    .s-err     { background: rgba(239,68,68,.16);  color: #fecaca; }
+    @keyframes pulseSoft {
+      0%,100% { box-shadow: 0 0 0 0 rgba(14,165,233,.2); }
+      50%     { box-shadow: 0 0 0 6px rgba(14,165,233,0); }
+    }
+
+    .actions-row { display: flex; justify-content: flex-end; gap: 12px; padding-top: 4px; }
+
+    /* ─── transición fullscreen ───────────────────────────── */
+    #transitionOverlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 50% 40%, rgba(14,165,233,.22), transparent 52%),
+                  linear-gradient(180deg, #030c1c 0%, #020617 100%);
+      opacity: 0; pointer-events: none;
+      transition: opacity .35s ease;
+    }
+    #transitionOverlay.visible { opacity: 1; pointer-events: all; }
+
+    .trans-inner {
+      display: flex; flex-direction: column; align-items: center; gap: 28px;
+      animation: transIn .45s var(--ease) both;
+    }
+    @keyframes transIn {
+      from { opacity: 0; transform: translateY(20px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* SVG rocket */
+    .rocket-wrap {
+      position: relative; width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rocket-ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 2px solid rgba(14,165,233,.2);
+      animation: ringExpand 1.8s ease-in-out infinite;
+    }
+    .rocket-ring:nth-child(2) { animation-delay: .6s; }
+    .rocket-ring:nth-child(3) { animation-delay: 1.2s; }
+    @keyframes ringExpand {
+      0%   { transform: scale(.6); opacity: .7; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+    .rocket-icon {
+      position: relative; z-index: 1;
+      animation: rocketFloat 2s ease-in-out infinite;
+    }
+    @keyframes rocketFloat {
+      0%,100% { transform: translateY(0) rotate(-45deg); }
+      50%     { transform: translateY(-8px) rotate(-45deg); }
+    }
+
+    /* progress bar */
+    .trans-bar-wrap {
+      width: 260px; height: 4px; background: rgba(148,163,184,.14);
+      border-radius: 999px; overflow: hidden;
+    }
+    .trans-bar {
+      height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      box-shadow: 0 0 12px rgba(14,165,233,.5);
+      transition: width .12s linear;
+    }
+
+    .trans-label {
+      font-size: 15px; font-weight: 800; color: var(--text);
+      letter-spacing: -.01em; text-align: center;
+    }
+    .trans-sub {
+      font-size: 13px; color: var(--muted-2); text-align: center; margin-top: -16px;
+    }
+
+    /* floating particles */
+    .particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle, rgba(14,165,233,.7), transparent 70%);
+      animation: particleDrift linear infinite;
+    }
+    @keyframes particleDrift {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: .5; }
+      100% { transform: translateY(-10vh) scale(1.4); opacity: 0; }
+    }
+
+    /* ─── step 2 ──────────────────────────────────────────── */
+    .step2-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .panel-left { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 20px; }
+
+    .kv { display: grid; grid-template-columns: 130px 1fr; gap: 8px 12px; align-items: start; font-size: 13px; }
+    .kv-key  { color: var(--muted-2); font-weight: 700; padding-top: 2px; }
+    .kv-val  { font-family: Consolas, Monaco, monospace; word-break: break-all; color: var(--text); }
+    .kv-val.hi { color: #bae6fd; }
+
+    .land-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* ─── WhatsApp block ──────────────────────────────────── */
+    .wa-block {
+      background: linear-gradient(180deg, rgba(21,128,61,.18), rgba(15,23,42,.92));
+      border: 1px solid rgba(34,197,94,.22);
+      border-radius: var(--radius); padding: 22px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .wa-title-row { display: flex; align-items: center; gap: 10px; }
+    .wa-icon {
+      width: 36px; height: 36px; background: rgba(34,197,94,.18);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .wa-block h3 { font-size: 16px; font-weight: 800; }
+    .wa-block p.wa-sub { font-size: 13px; color: var(--muted-2); line-height: 1.6; }
+
+    .phone-field { display: flex; flex-direction: column; gap: 7px; }
+    .phone-field label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: #dcfce7; }
+    input.phone-input {
+      width: 100%; padding: 12px 14px; background: rgba(2,6,23,.55);
+      border: 1px solid rgba(34,197,94,.24); border-radius: 10px;
+      color: var(--text); font-size: 14px; font-family: Consolas, Monaco, monospace;
+      outline: none; transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    input.phone-input:focus { border-color: rgba(34,197,94,.5); box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
+    .phone-hint { font-size: 11px; color: rgba(134,239,172,.7); margin-top: 4px; }
+
+    .contacts-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .contact-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 7px 12px; border-radius: 999px;
+      background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.2);
+      color: #bbf7d0; font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: background var(--ease), transform var(--ease);
+    }
+    .contact-chip:hover { background: rgba(34,197,94,.2); transform: translateY(-1px); }
+    .contact-chip.active { background: rgba(34,197,94,.24); border-color: rgba(34,197,94,.48); box-shadow: 0 0 0 1px rgba(34,197,94,.24); }
+
+    .msg-field { display: flex; flex-direction: column; gap: 7px; }
+    .msg-field label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: #dcfce7; }
+    textarea.msg-area {
+      width: 100%; min-height: 96px; padding: 12px 14px;
+      background: rgba(2,6,23,.55); border: 1px solid rgba(34,197,94,.24); border-radius: 10px;
+      color: var(--text); font-size: 13px; line-height: 1.6; resize: vertical; outline: none;
+      transition: border-color var(--ease), box-shadow var(--ease);
+    }
+    textarea.msg-area:focus { border-color: rgba(34,197,94,.5); box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
+
+    .msg-preview {
+      font-size: 12px; color: rgba(134,239,172,.8); line-height: 1.65; word-break: break-word;
+      padding: 10px 13px; background: rgba(2,6,23,.35);
+      border-radius: 8px; border: 1px solid rgba(34,197,94,.12);
+    }
+    .msg-preview strong { display: block; margin-bottom: 5px; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: rgba(134,239,172,.55); }
+
+    .wa-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* ─── preview panel ───────────────────────────────────── */
+    .preview-panel {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border); background: rgba(2,6,23,.9);
+    }
+    .preview-topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 12px 16px; background: rgba(15,23,42,.92);
+      border-bottom: 1px solid var(--border); backdrop-filter: blur(8px);
+    }
+    .preview-topbar-title { font-size: 13px; font-weight: 800; color: var(--muted-2); }
+    .preview-topbar .btn { padding: 7px 12px; font-size: 12px; border-radius: 8px; }
+    iframe#landingFrame { display: block; width: 100%; height: 900px; border: 0; background: #fff; transition: opacity var(--ease); }
+    .preview-placeholder {
+      height: 900px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      color: var(--muted-2); font-size: 15px;
+    }
+    .preview-placeholder svg { opacity: .3; }
+
+    /* ─── nav back ────────────────────────────────────────── */
+    .nav-back {
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--muted-2); font-size: 14px; font-weight: 700;
+      transition: color var(--ease);
+    }
+    .nav-back:hover { color: var(--text); }
+
+    /* ─── responsive ──────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .step2-layout { grid-template-columns: 1fr; }
+      .panel-left   { position: static; }
+      iframe#landingFrame { height: 640px; }
+      .preview-placeholder { height: 640px; }
+    }
+    @media (max-width: 560px) {
+      .preset-grid { grid-template-columns: 1fr; }
+      .progress-track { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     OVERLAY DE TRANSICIÓN
+═══════════════════════════════════════════════════════════ -->
+<div id="transitionOverlay" role="status" aria-live="polite" aria-label="Gerando landing">
+  <div class="particles" id="particles"></div>
+
+  <div class="trans-inner">
+    <div class="rocket-wrap">
+      <div class="rocket-ring"></div>
+      <div class="rocket-ring"></div>
+      <div class="rocket-ring"></div>
+      <svg class="rocket-icon" xmlns="http://www.w3.org/2000/svg" width="56" height="56"
+           viewBox="0 0 24 24" fill="none" stroke="url(#rg)" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <defs>
+          <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0ea5e9"/>
+            <stop offset="100%" stop-color="#6366f1"/>
+          </linearGradient>
+        </defs>
+        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+        <path d="m3.29 15 1.29 1.29"/>
+        <path d="M6.3 10.75c1.04-.5 2.2-.76 3.38-.76A9.77 9.77 0 0 1 19.5 4.5c0 2.83-.92 5.44-2.5 7.5"/>
+        <path d="m9.76 13.25 1.24 1.24"/>
+        <path d="M11 9.9c.5-1.04.76-2.2.76-3.38v-.77"/>
+        <path d="M15.5 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="url(#rg)" stroke="none"/>
+      </svg>
+    </div>
+
+    <div>
+      <div class="trans-label" id="transLabel">Gerando sua landing…</div>
+      <div class="trans-sub"  id="transSub">Validando JSON e resolvendo template</div>
+    </div>
+
+    <div class="trans-bar-wrap">
+      <div class="trans-bar" id="transBar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     APP
+═══════════════════════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- header -->
+  <header class="app-header">
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+             fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div>
+        <div class="app-name">ScriptoCCM · Landing Engine</div>
+        <div class="app-sub">Demo genérico · fluxo simplificado</div>
+      </div>
+    </div>
+
+    <nav class="progress-track" aria-label="Etapas">
+      <button class="prog-step active" data-prog="1">
+        <span class="prog-num">1</span>
+        <span class="prog-label">JSON</span>
+      </button>
+      <div class="prog-connector"></div>
+      <button class="prog-step" data-prog="2">
+        <span class="prog-num">2</span>
+        <span class="prog-label">Landing &amp; Envio</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN 1
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="screen active" data-screen="1">
+    <div class="step1-layout">
+
+      <!-- presets: somente genérico + personalizado -->
+      <div class="card">
+        <div class="card-title">Selecione o ponto de partida</div>
+        <div class="card-sub">Escolha o JSON de demo genérico ou cole o seu próprio payload no editor.</div>
+
+        <div class="preset-grid">
+          <button class="preset-card selected" data-preset="generic">
+            <span class="preset-icon">📋</span>
+            <div class="preset-title">Demo genérico</div>
+            <div class="preset-desc">Payload padrão com dados de demonstração — cliente, veículo, coberturas e canais.</div>
+          </button>
+          <button class="preset-card" data-preset="custom">
+            <span class="preset-icon">✏️</span>
+            <div class="preset-title">JSON personalizado</div>
+            <div class="preset-desc">Cole ou edite livremente no editor abaixo. O telefone será detectado automaticamente.</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- endpoint -->
+      <div class="card">
+        <div style="display:grid; gap:8px;">
+          <span class="field-label">Endpoint de render</span>
+          <input id="endpointUrl" class="text-input" type="text" placeholder="http://localhost:3000/api/v1/landings/render" />
+        </div>
+      </div>
+
+      <!-- editor JSON -->
+      <div class="card">
+        <div class="editor-toolbar">
+          <span class="editor-label">Editor JSON</span>
+          <div class="editor-btns">
+            <button class="btn btn-ghost" id="btnFormat">Formatar</button>
+            <button class="btn btn-ghost" id="btnClear">Limpar</button>
+          </div>
+        </div>
+        <textarea class="json-area" id="jsonEditor" spellcheck="false" autocomplete="off"></textarea>
+      </div>
+
+      <div class="status-bar">
+        <span class="status-pill s-idle" id="statusPill">Pronto para gerar</span>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-primary" id="btnGenerate">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Gerar landing
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN 2
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="screen" data-screen="2">
+
+    <div style="margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <button class="nav-back" id="btnBack">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Voltar ao início
+      </button>
+      <span class="status-pill s-ok">Landing gerada com sucesso</span>
+    </div>
+
+    <div class="step2-layout">
+
+      <!-- panel izquierdo -->
+      <div class="panel-left">
+
+        <!-- resultado -->
+        <div class="card">
+          <div class="card-title" style="font-size:16px; margin-bottom:14px;">Resultado do render</div>
+          <div class="kv">
+            <span class="kv-key">Render ID</span>  <span class="kv-val" id="r-renderId">-</span>
+            <span class="kv-key">Token</span>       <span class="kv-val" id="r-token">-</span>
+            <span class="kv-key">Template</span>    <span class="kv-val" id="r-template">-</span>
+            <span class="kv-key">URL pública</span> <span class="kv-val hi" id="r-url">-</span>
+          </div>
+          <div class="land-actions" style="margin-top:18px;">
+            <button class="btn btn-ghost" id="btnOpenLanding" disabled>Abrir em nova aba</button>
+            <button class="btn btn-ghost" id="btnCopyUrl"     disabled>Copiar URL</button>
+          </div>
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="wa-block">
+          <div>
+            <div class="wa-title-row">
+              <div class="wa-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#22c55e">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+                </svg>
+              </div>
+              <h3>Compartilhar por WhatsApp</h3>
+            </div>
+            <p class="wa-sub" style="margin-top:8px;">Envie a landing ao cliente. Edite o número ou selecione um contato detectado no JSON.</p>
+          </div>
+
+          <!-- telefone -->
+          <div>
+            <div class="phone-field">
+              <label for="whatsPhone">Número de telefone</label>
+              <input id="whatsPhone" class="phone-input" type="text" placeholder="5511912345678" />
+            </div>
+            <div class="phone-hint">DDI + DDD + número, somente dígitos. Ex: 5511912345678</div>
+          </div>
+
+          <!-- chips de contatos detectados -->
+          <div id="contactSuggestions" style="display:none;">
+            <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:rgba(134,239,172,.6); margin-bottom:8px;">Contatos detectados no JSON</div>
+            <div class="contacts-row" id="contactChips"></div>
+          </div>
+
+          <!-- mensagem -->
+          <div class="msg-field">
+            <label for="whatsMsg">Mensagem</label>
+            <textarea id="whatsMsg" class="msg-area">Olá! 👋 Sua landing interativa está pronta. Acesse aqui: {{landingUrl}}</textarea>
+          </div>
+
+          <!-- prévia -->
+          <div class="msg-preview">
+            <strong>Prévia da mensagem</strong>
+            <span id="msgPreviewText">A mensagem será montada após a geração da landing.</span>
+          </div>
+
+          <div class="wa-actions">
+            <button class="btn btn-success" id="btnSendWhatsapp" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+              </svg>
+              Enviar no WhatsApp
+            </button>
+            <button class="btn btn-ghost" id="btnCopyMsg" disabled>Copiar mensagem</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- preview panel -->
+      <div class="preview-panel">
+        <div class="preview-topbar">
+          <span class="preview-topbar-title">Preview da landing</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-ghost preview-topbar" id="btnReload" style="padding:7px 12px; font-size:12px; border-radius:8px; border:1px solid rgba(148,163,184,.16);">Recarregar</button>
+            <button class="btn btn-ghost preview-topbar" id="btnOpen2"  style="padding:7px 12px; font-size:12px; border-radius:8px; border:1px solid rgba(148,163,184,.16);" disabled>Abrir ↗</button>
+          </div>
+        </div>
+
+        <div class="preview-placeholder" id="previewPlaceholder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>A landing aparecerá aqui após a geração</span>
+        </div>
+        <iframe id="landingFrame" title="Landing preview" src="about:blank" style="display:none;"></iframe>
+      </div>
+
+    </div>
+  </section>
+
+</div><!-- .app -->
+
+<script>
+// ── payload genérico ────────────────────────────────────────
+const GENERIC_PAYLOAD = {
+  templateCode: "landing-poliza-mvp-ptbr-v2",
+  data: {
+    branding: {
+      empresa: "ScriptoCCM",
+      produto: "Comunicação Digital",
+      tagline: "Landing digital interativa",
+      navSubtitle: "Motor de landing ScriptoCCM",
+      heroTitle: "Olá, Maria Silva",
+      heroDescription: "Navegue pelas informações principais do seu seguro, coberturas, veículo, pagamento e canais de atendimento."
+    },
+    cliente: {
+      nome: "Maria Silva",
+      documento: "123.456.789-00",
+      telefone: "(11) 91234-5678",
+      email: "maria.silva@example.com"
+    },
+    poliza: {
+      numero: "PS-2026-0001",
+      vigenciaDesde: "2026-04-13",
+      vigenciaHasta: "2027-04-12",
+      estado: "Vigente",
+      primaTotal: 2522.98,
+      franquia: 10153,
+      moneda: "BRL"
+    },
+    vehiculo: {
+      marca: "Toyota",
+      modelo: "Corolla Altis",
+      anio: 2024,
+      placa: "ABCD123",
+      combustivel: "Gasolina",
+      uso: "Particular",
+      fotoUrl: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop"
+    },
+    residencia: { direccion: "Rua Saint Hilaire, 47, Jardim Paulista, Sao Paulo - SP" },
+    corredor: {
+      nombre: "Potencia Corretora de Seguros",
+      telefono: "(11) 3338-1764",
+      email: "info@test.com"
+    },
+    beneficios: [
+      { titulo: "Assistência 24 horas" },
+      { titulo: "Carro reserva" },
+      { titulo: "Serviço de vidros" }
+    ],
+    coberturas: [
+      { titulo: "Colisão, incêndio, roubo e furto", monto: 1730.65, detalle: "Cobertura principal do casco do veículo conforme condições da apólice." },
+      { titulo: "Responsabilidade civil facultativa", monto: 200000, detalle: "Cobertura para danos materiais e corporais causados a terceiros." }
+    ],
+    pagos: {
+      forma: "Débito em conta",
+      cuotas: [
+        { numero: 1, vencimiento: "2026-04-30", valor: 630.73 },
+        { numero: 2, vencimiento: "2026-05-30", valor: 630.75 },
+        { numero: 3, vencimiento: "2026-06-30", valor: 630.75 },
+        { numero: 4, vencimiento: "2026-07-30", valor: 630.75 }
+      ]
+    },
+    canalesAtencion: [
+      { tipo: "Telefone", valor: "0800-123-456" },
+      { tipo: "WhatsApp", valor: "+55 11 91234-5678" }
+    ]
+  }
+};
+
+// ── estado ──────────────────────────────────────────────────
+let lastPublicUrl = '';
+
+// ── refs DOM ────────────────────────────────────────────────
+const overlay        = document.getElementById('transitionOverlay');
+const transBar       = document.getElementById('transBar');
+const transLabel     = document.getElementById('transLabel');
+const transSub       = document.getElementById('transSub');
+const endpointUrlEl  = document.getElementById('endpointUrl');
+const jsonEditorEl   = document.getElementById('jsonEditor');
+const statusPillEl   = document.getElementById('statusPill');
+const btnGenerateEl  = document.getElementById('btnGenerate');
+const btnFormatEl    = document.getElementById('btnFormat');
+const btnClearEl     = document.getElementById('btnClear');
+const btnBackEl      = document.getElementById('btnBack');
+const rRenderIdEl    = document.getElementById('r-renderId');
+const rTokenEl       = document.getElementById('r-token');
+const rTemplateEl    = document.getElementById('r-template');
+const rUrlEl         = document.getElementById('r-url');
+const btnOpenEl      = document.getElementById('btnOpenLanding');
+const btnOpen2El     = document.getElementById('btnOpen2');
+const btnCopyUrlEl   = document.getElementById('btnCopyUrl');
+const btnReloadEl    = document.getElementById('btnReload');
+const whatsPhoneEl   = document.getElementById('whatsPhone');
+const whatsMsgEl     = document.getElementById('whatsMsg');
+const msgPreviewEl   = document.getElementById('msgPreviewText');
+const contactSuggestEl = document.getElementById('contactSuggestions');
+const contactChipsEl = document.getElementById('contactChips');
+const btnSendWaEl    = document.getElementById('btnSendWhatsapp');
+const btnCopyMsgEl   = document.getElementById('btnCopyMsg');
+const landingFrameEl = document.getElementById('landingFrame');
+const previewPHEl    = document.getElementById('previewPlaceholder');
+const presetCards    = Array.from(document.querySelectorAll('.preset-card'));
+const progSteps      = Array.from(document.querySelectorAll('.prog-step'));
+const screens        = Array.from(document.querySelectorAll('.screen'));
+
+// ── partículas del overlay ───────────────────────────────────
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  container.innerHTML = '';
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 12 + 4;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random() * 100}%;
+      animation-duration:${2.4 + Math.random() * 2.8}s;
+      animation-delay:${Math.random() * 2}s;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ── transición animada ───────────────────────────────────────
+const STEPS = [
+  { pct: 18,  label: 'Validando JSON…',                 sub: 'Verificando estrutura e tipos de dados' },
+  { pct: 38,  label: 'Normalizando modelo…',             sub: 'Transformando para o modelo canônico' },
+  { pct: 58,  label: 'Resolvendo template…',             sub: 'Carregando template Handlebars' },
+  { pct: 74,  label: 'Renderizando HTML…',               sub: 'Substituindo variáveis e seções' },
+  { pct: 88,  label: 'Publicando landing…',              sub: 'Salvando artifacts e gerando token' },
+  { pct: 100, label: 'Pronto!',                          sub: 'Redirecionando para a landing…' },
+];
+
+function showTransition() {
+  spawnParticles();
+  overlay.classList.add('visible');
+  transBar.style.width = '0%';
+  transLabel.textContent = STEPS[0].label;
+  transSub.textContent   = STEPS[0].sub;
+}
+
+function hideTransition() {
+  overlay.classList.remove('visible');
+}
+
+function animateTransition(apiPromise) {
+  showTransition();
+
+  let stepIdx = 0;
+  const totalMs = 1600; // tiempo máximo de animación independiente del API
+  const intervalMs = totalMs / STEPS.length;
+
+  const timer = setInterval(() => {
+    stepIdx = Math.min(stepIdx + 1, STEPS.length - 1);
+    const s = STEPS[stepIdx];
+    transBar.style.width   = s.pct + '%';
+    transLabel.textContent = s.label;
+    transSub.textContent   = s.sub;
+    if (stepIdx === STEPS.length - 1) clearInterval(timer);
+  }, intervalMs);
+
+  return apiPromise.finally(() => {
+    clearInterval(timer);
+    transBar.style.width = '100%';
+    transLabel.textContent = 'Pronto!';
+    transSub.textContent   = 'Abrindo a landing…';
+  });
+}
+
+// ── utilidades ───────────────────────────────────────────────
+function setStatus(type, msg) {
+  statusPillEl.className  = `status-pill s-${type}`;
+  statusPillEl.textContent = msg;
+}
+
+function buildAbsoluteUrl(endpointUrl, publicUrl) {
+  if (!publicUrl) return '';
+  if (/^https?:\/\//i.test(publicUrl)) return publicUrl;
+  try {
+    const ep = new URL(endpointUrl);
+    return `${ep.origin}${publicUrl.startsWith('/') ? publicUrl : `/${publicUrl}`}`;
+  } catch { return publicUrl; }
+}
+
+function digitsOnly(str) { return String(str || '').replace(/\D/g, ''); }
+
+function extractContacts(payload) {
+  const contacts = [];
+  try {
+    const d = payload?.data;
+    if (d?.cliente?.telefone)  contacts.push({ label: `Cliente · ${d.cliente.nome || ''}`.trim(), raw: d.cliente.telefone });
+    if (d?.corredor?.telefono) contacts.push({ label: `Corredor · ${d.corredor.nombre || ''}`.trim(), raw: d.corredor.telefono });
+    if (Array.isArray(d?.canalesAtencion)) {
+      d.canalesAtencion.forEach(c => {
+        if (c.tipo && /whatsapp/i.test(c.tipo)) {
+          contacts.push({ label: `WA · ${c.valor}`, raw: c.valor });
+        }
+      });
+    }
+  } catch {}
+  return contacts.filter(c => digitsOnly(c.raw).length >= 8);
+}
+
+function buildWaMsg(url) {
+  const tmpl = whatsMsgEl.value.trim() || 'Olá! Segue a landing: {{landingUrl}}';
+  return tmpl.includes('{{landingUrl}}')
+    ? tmpl.replaceAll('{{landingUrl}}', url)
+    : `${tmpl}\n\n${url}`;
+}
+
+function updateWaUI() {
+  const phone  = digitsOnly(whatsPhoneEl.value);
+  const hasUrl = Boolean(lastPublicUrl);
+  msgPreviewEl.textContent = hasUrl
+    ? buildWaMsg(lastPublicUrl)
+    : 'A mensagem será montada após a geração da landing.';
+  btnSendWaEl.disabled  = !(hasUrl && phone.length >= 10);
+  btnCopyMsgEl.disabled = !hasUrl;
+  Array.from(contactChipsEl.children).forEach(chip => {
+    chip.classList.toggle('active', digitsOnly(chip.dataset.phone) === phone);
+  });
+}
+
+function renderChips(contacts) {
+  contactChipsEl.innerHTML = '';
+  if (!contacts.length) { contactSuggestEl.style.display = 'none'; return; }
+  contactSuggestEl.style.display = '';
+  contacts.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'contact-chip';
+    btn.dataset.phone = digitsOnly(c.raw);
+    btn.textContent   = `${c.label}  ${c.raw}`;
+    btn.addEventListener('click', () => { whatsPhoneEl.value = digitsOnly(c.raw); updateWaUI(); });
+    contactChipsEl.appendChild(btn);
+  });
+  updateWaUI();
+}
+
+// ── navegación ───────────────────────────────────────────────
+function showScreen(n) {
+  screens.forEach(s => s.classList.toggle('active', Number(s.dataset.screen) === n));
+  progSteps.forEach(btn => {
+    const step = Number(btn.dataset.prog);
+    btn.classList.toggle('active', step === n);
+    btn.classList.toggle('done',   step < n);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── presets ──────────────────────────────────────────────────
+function loadPreset(key) {
+  presetCards.forEach(c => c.classList.toggle('selected', c.dataset.preset === key));
+  if (key === 'generic') {
+    jsonEditorEl.value = JSON.stringify(GENERIC_PAYLOAD, null, 2);
+  }
+  // 'custom': deja lo que haya en el editor
+}
+
+presetCards.forEach(card => card.addEventListener('click', () => loadPreset(card.dataset.preset)));
+
+progSteps.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const step = Number(btn.dataset.prog);
+    if (step === 1) showScreen(1);
+    if (step === 2 && lastPublicUrl) showScreen(2);
+  });
+});
+
+// ── editor ───────────────────────────────────────────────────
+btnFormatEl.addEventListener('click', () => {
+  try {
+    jsonEditorEl.value = JSON.stringify(JSON.parse(jsonEditorEl.value), null, 2);
+    setStatus('idle', 'JSON formatado');
+  } catch { setStatus('err', 'JSON inválido'); }
+});
+
+btnClearEl.addEventListener('click', () => {
+  jsonEditorEl.value = '';
+  presetCards.forEach(c => c.classList.remove('selected'));
+  document.querySelector('[data-preset="custom"]').classList.add('selected');
+  setStatus('idle', 'Editor limpo');
+});
+
+// ── gerar ────────────────────────────────────────────────────
+btnGenerateEl.addEventListener('click', async () => {
+  let payload;
+  try { payload = JSON.parse(jsonEditorEl.value); }
+  catch { setStatus('err', 'JSON inválido — revise o editor'); return; }
+
+  const endpointUrl = endpointUrlEl.value.trim();
+  if (!endpointUrl) { setStatus('err', 'Informe o endpoint'); return; }
+
+  btnGenerateEl.disabled = true;
+  setStatus('loading', 'Gerando landing…');
+
+  // promesa real del API
+  const apiCall = fetch(endpointUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(async res => {
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.message || `Erro HTTP ${res.status}`);
+    return data;
+  });
+
+  // animar en paralelo con el API
+  let data;
+  try {
+    data = await animateTransition(apiCall);
+  } catch (err) {
+    hideTransition();
+    btnGenerateEl.disabled = false;
+    setStatus('err', err.message || 'Falha ao gerar');
+    alert(`Não foi possível gerar a landing.\n\n${err.message || err}`);
+    return;
+  }
+
+  // pequeña pausa para que se vea el 100%
+  await new Promise(r => setTimeout(r, 420));
+  hideTransition();
+  btnGenerateEl.disabled = false;
+
+  // popular resultados
+  rRenderIdEl.textContent = data.renderId       || '-';
+  rTokenEl.textContent    = data.token          || '-';
+  rTemplateEl.textContent = `${data.templateCode || '-'}  v${data.templateVersion || '-'}`;
+  rUrlEl.textContent      = data.publicUrl      || '-';
+
+  lastPublicUrl = buildAbsoluteUrl(endpointUrl, data.publicUrl);
+
+  btnOpenEl.disabled  = !lastPublicUrl;
+  btnOpen2El.disabled = !lastPublicUrl;
+  btnCopyUrlEl.disabled = !lastPublicUrl;
+
+  if (lastPublicUrl) {
+    previewPHEl.style.display  = 'none';
+    landingFrameEl.style.display = 'block';
+    landingFrameEl.style.opacity = '0';
+    landingFrameEl.src = lastPublicUrl;
+    landingFrameEl.onload = () => { landingFrameEl.style.opacity = '1'; };
+  }
+
+  const contacts = extractContacts(payload);
+  if (contacts.length && !whatsPhoneEl.value.trim()) {
+    whatsPhoneEl.value = digitsOnly(contacts[0].raw);
+  }
+  renderChips(contacts);
+  updateWaUI();
+
+  setStatus('idle', 'Landing gerada com sucesso');
+  showScreen(2);
+});
+
+// ── acciones landing ─────────────────────────────────────────
+btnBackEl.addEventListener('click', () => showScreen(1));
+
+btnOpenEl.addEventListener('click', () => {
+  if (lastPublicUrl) window.open(lastPublicUrl, '_blank', 'noopener,noreferrer');
+});
+btnOpen2El.addEventListener('click', () => {
+  if (lastPublicUrl) window.open(lastPublicUrl, '_blank', 'noopener,noreferrer');
+});
+
+btnCopyUrlEl.addEventListener('click', async () => {
+  if (!lastPublicUrl) return;
+  try {
+    await navigator.clipboard.writeText(lastPublicUrl);
+    const o = btnCopyUrlEl.textContent;
+    btnCopyUrlEl.textContent = 'Copiada ✓';
+    setTimeout(() => { btnCopyUrlEl.textContent = o; }, 2000);
+  } catch { alert('Não foi possível copiar automaticamente.'); }
+});
+
+btnReloadEl.addEventListener('click', () => {
+  if (lastPublicUrl) {
+    landingFrameEl.style.opacity = '0';
+    landingFrameEl.src = lastPublicUrl;
+    landingFrameEl.onload = () => { landingFrameEl.style.opacity = '1'; };
+  }
+});
+
+// ── whatsapp ─────────────────────────────────────────────────
+whatsPhoneEl.addEventListener('input', updateWaUI);
+whatsMsgEl.addEventListener('input',  updateWaUI);
+
+btnSendWaEl.addEventListener('click', () => {
+  const phone = digitsOnly(whatsPhoneEl.value);
+  if (phone.length < 10) { alert('Informe um telefone válido com DDI e DDD (mín. 10 dígitos).'); return; }
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(buildWaMsg(lastPublicUrl))}`, '_blank', 'noopener,noreferrer');
+});
+
+btnCopyMsgEl.addEventListener('click', async () => {
+  if (!lastPublicUrl) return;
+  try {
+    await navigator.clipboard.writeText(buildWaMsg(lastPublicUrl));
+    const o = btnCopyMsgEl.textContent;
+    btnCopyMsgEl.textContent = 'Copiada ✓';
+    setTimeout(() => { btnCopyMsgEl.textContent = o; }, 2000);
+  } catch { alert('Não foi possível copiar automaticamente.'); }
+});
+
+// ── init ─────────────────────────────────────────────────────
+endpointUrlEl.value = `${window.location.origin}/api/v1/landings/render`;
+loadPreset('generic');
+showScreen(1);
+</script>
+</body>
+</html>

@@ -19,6 +19,7 @@ export class LandingRenderController {
       token: metadata.token,
       templateCode: metadata.templateCode,
       templateVersion: metadata.templateVersion,
+      expiresAt: metadata.expiresAt,
       publicUrl: `/api/v1/public/landing/${metadata.token}`,
       artifacts: {
         html: true,

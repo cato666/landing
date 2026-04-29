@@ -1,0 +1,336 @@
+{
+  "info": {
+    "_postman_id": "d1e54f85-67d0-4c6d-a711-2d8ef45c7d2d",
+    "name": "Porto MVP Local",
+    "description": "Coleccion para probar Porto-MVP localmente. Usa la variable baseUrl apuntando por defecto a http://localhost:3001. Los requests de render guardan automaticamente token, renderId y publicUrl en variables de coleccion.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "renderId",
+      "value": ""
+    },
+    {
+      "key": "publicUrl",
+      "value": ""
+    },
+    {
+      "key": "metricName",
+      "value": "render_requests_total"
+    },
+    {
+      "key": "dateFrom",
+      "value": "2026-04-01"
+    },
+    {
+      "key": "dateTo",
+      "value": "2026-12-31"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Ready",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ready",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ready"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Live",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/live",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "live"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Prometheus Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/metrics",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "metrics"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Landings",
+      "item": [
+        {
+          "name": "Render Landing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('token', json.token);",
+                  "if (json.renderId) pm.collectionVariables.set('renderId', json.renderId);",
+                  "if (json.publicUrl) pm.collectionVariables.set('publicUrl', json.publicUrl);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"templateCode\": \"landing-poliza-mvp-ptbr-v2\",\n  \"expiresAt\": \"2027-04-18T23:59:59.000Z\",\n  \"data\": {\n    \"branding\": {\n      \"empresa\": \"Porto Seguro\",\n      \"produto\": \"Auto Premium\",\n      \"tagline\": \"Apolice digital interativa\",\n      \"navSubtitle\": \"MVP apolice visual interativa\",\n      \"heroTitle\": \"Ola, Maria Silva\",\n      \"heroDescription\": \"Navegue pelas informacoes principais do seu seguro, coberturas, veiculo, pagamento e canais de atendimento.\"\n    },\n    \"cliente\": {\n      \"nome\": \"Maria Silva\",\n      \"documento\": \"123.456.789-00\",\n      \"telefone\": \"(11) 91234-5678\",\n      \"email\": \"maria.silva@example.com\"\n    },\n    \"poliza\": {\n      \"numero\": \"PS-2026-0001\",\n      \"vigenciaDesde\": \"2026-04-13\",\n      \"vigenciaHasta\": \"2027-04-12\",\n      \"estado\": \"Vigente\",\n      \"primaTotal\": 2522.98,\n      \"franquia\": 10153,\n      \"moneda\": \"BRL\"\n    },\n    \"vehiculo\": {\n      \"marca\": \"Toyota\",\n      \"modelo\": \"Corolla Altis\",\n      \"anio\": 2024,\n      \"placa\": \"ABCD123\",\n      \"combustivel\": \"Gasolina\",\n      \"uso\": \"Particular\",\n      \"fotoUrl\": \"https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop\"\n    },\n    \"residencia\": {\n      \"direccion\": \"Rua Saint Hilaire, 47, Jardim Paulista, Sao Paulo - SP\"\n    },\n    \"corredor\": {\n      \"nombre\": \"Potencia Corretora de Seguros\",\n      \"telefono\": \"(11) 3338-1764\",\n      \"email\": \"info@test.com\"\n    },\n    \"beneficios\": [\n      { \"titulo\": \"Assistencia 24 horas\" },\n      { \"titulo\": \"Carro reserva\" },\n      { \"titulo\": \"Servico de vidros\" }\n    ],\n    \"coberturas\": [\n      {\n        \"titulo\": \"Colisao, incendio, roubo e furto\",\n        \"monto\": 1730.65,\n        \"detalle\": \"Cobertura principal do casco do veiculo conforme condicoes da apolice.\"\n      },\n      {\n        \"titulo\": \"Responsabilidade civil facultativa\",\n        \"monto\": 200000,\n        \"detalle\": \"Cobertura para danos materiais e corporais causados a terceiros.\"\n      }\n    ],\n    \"pagos\": {\n      \"forma\": \"Debito em conta\",\n      \"cuotas\": [\n        { \"numero\": 1, \"vencimiento\": \"2026-04-30\", \"valor\": 630.73 },\n        { \"numero\": 2, \"vencimiento\": \"2026-05-30\", \"valor\": 630.75 },\n        { \"numero\": 3, \"vencimiento\": \"2026-06-30\", \"valor\": 630.75 },\n        { \"numero\": 4, \"vencimiento\": \"2026-07-30\", \"valor\": 630.75 }\n      ]\n    },\n    \"canalesAtencion\": [\n      { \"tipo\": \"Telefone\", \"valor\": \"0800-123-456\" },\n      { \"tipo\": \"WhatsApp\", \"valor\": \"+55 11 99999-0000\" }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/landings/render",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "landings",
+                "render"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Render Batch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"templateCode\": \"landing-poliza-mvp-ptbr-v2\",\n      \"data\": {\n        \"branding\": {\n          \"empresa\": \"Porto Seguro\",\n          \"produto\": \"Auto Premium\"\n        },\n        \"cliente\": {\n          \"nome\": \"Maria Silva\"\n        }\n      }\n    },\n    {\n      \"templateCode\": \"landing-poliza-mvp-ptbr-v2\",\n      \"data\": {\n        \"branding\": {\n          \"empresa\": \"Porto Seguro\",\n          \"produto\": \"Moto\"\n        },\n        \"cliente\": {\n          \"nome\": \"Joao Pereira\"\n        }\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/landings/render-batch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "landings",
+                "render-batch"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Landing",
+      "item": [
+        {
+          "name": "Get Landing HTML",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/landing/{{token}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "landing",
+                "{{token}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Track Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"landing_open\",\n  \"payload\": {\n    \"source\": \"manual-test\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/landing/{{token}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "landing",
+                "{{token}}",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/public/landing/{{token}}/pdf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "landing",
+                "{{token}}",
+                "pdf"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Metrics Totals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analytics/metrics?from={{dateFrom}}&to={{dateTo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analytics",
+                "metrics"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{dateFrom}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{dateTo}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Metric Series",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analytics/metrics/{{metricName}}?from={{dateFrom}}&to={{dateTo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "analytics",
+                "metrics",
+                "{{metricName}}"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{dateFrom}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{dateTo}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

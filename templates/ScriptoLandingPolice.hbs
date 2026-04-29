@@ -1,0 +1,139 @@
+<div class="brand">
+  <img src="{{branding.logoUrl}}" class="brand-logo-img" />
+  <div>
+    <div class="brand-title">{{branding.empresa}}</div>
+    <div class="brand-subtitle">{{branding.navSubtitle}}</div>
+  </div>
+</div>
+
+<section class="hero">
+  <small>{{branding.tagline}}</small>
+  <h1>{{branding.heroTitle}}</h1>
+  <p>{{branding.heroDescription}}</p>
+
+  <div class="hero-grid">
+    <div class="hero-stat">
+      <label>Número da apólice</label>
+      <strong>{{poliza.numero}}</strong>
+    </div>
+
+    <div class="hero-stat">
+      <label>Vigência</label>
+      <strong>{{poliza.vigenciaDesde}} a {{poliza.vigenciaHasta}}</strong>
+    </div>
+
+    <div class="hero-stat">
+      <label>Prêmio total</label>
+      <strong>{{poliza.primaTotal}}</strong>
+    </div>
+
+    <div class="hero-stat">
+      <label>Franquia</label>
+      <strong>{{poliza.franquia}}</strong>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Dados do cliente</h2>
+  <div class="subgrid">
+    <div class="item">
+      <label>Nome</label>
+      <strong>{{cliente.nome}}</strong>
+    </div>
+    <div class="item">
+      <label>Documento</label>
+      <span>{{cliente.documento}}</span>
+    </div>
+    <div class="item">
+      <label>Telefone</label>
+      <span>{{cliente.telefone}}</span>
+    </div>
+    <div class="item">
+      <label>Email</label>
+      <span>{{cliente.email}}</span>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Veículo</h2>
+  <img src="{{vehiculo.fotoUrl}}" class="vehicle-photo"/>
+
+  <div class="subgrid">
+    <div class="item">
+      <label>Modelo</label>
+      <strong>{{vehiculo.marca}} {{vehiculo.modelo}}</strong>
+    </div>
+    <div class="item">
+      <label>Ano</label>
+      <span>{{vehiculo.anio}}</span>
+    </div>
+    <div class="item">
+      <label>Placa</label>
+      <span>{{vehiculo.placa}}</span>
+    </div>
+    <div class="item">
+      <label>Uso</label>
+      <span>{{vehiculo.uso}}</span>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Benefícios</h2>
+  <div class="pill-list">
+    {{#each beneficios}}
+      <div class="pill">{{this.titulo}}</div>
+    {{/each}}
+  </div>
+</section>
+
+<section class="card">
+  <h2>Coberturas</h2>
+  <div class="accordion">
+    {{#each coberturas}}
+      <details>
+        <summary>
+          <span>{{this.titulo}}</span>
+          <span class="money">{{this.monto}}</span>
+        </summary>
+        <div class="cov-body">
+          {{this.detalle}}
+        </div>
+      </details>
+    {{/each}}
+  </div>
+</section>
+
+<section class="card">
+  <h2>Pagamentos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Parcela</th>
+        <th>Vencimento</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each pagos.cuotas}}
+        <tr>
+          <td>{{this.numero}}</td>
+          <td>{{this.vencimiento}}</td>
+          <td>{{this.valor}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Contato</h2>
+  {{#each canalesAtencion}}
+    <div class="item">
+      <label>{{this.tipo}}</label>
+      <strong>{{this.valor}}</strong>
+    </div>
+  {{/each}}
+</section>

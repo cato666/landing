@@ -1,0 +1,12 @@
+services:
+  app:
+    environment:
+      NODE_ENV: development
+      REPOSITORY_BACKEND: filesystem
+      LANDING_PDF_MODE: placeholder
+    command: npm run start:dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
