@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LandingMetadata {
+  renderId        String   @id
+  token           String   @unique
+  templateCode    String
+  templateVersion String
+  createdAt       DateTime
+  expiresAt       DateTime?
+  artifacts       Json
+}
+
+model LandingArtifactManifest {
+  renderId        String   @id
+  templateCode    String
+  templateVersion String
+  storageBackend  String
+  inputPath       String
+  inputContentType String
+  canonicalPath   String
+  canonicalContentType String
+  htmlPath        String
+  htmlContentType String
+  metadataPath    String
+  metadataContentType String
+  eventsPath      String
+  eventsContentType String
+  pdfPath         String?
+  pdfContentType  String?
+  updatedAt       DateTime
+}
+
+model LandingEvent {
+  id         String   @id @default(cuid())
+  renderId   String
+  type       String
+  occurredAt DateTime
+  payload    Json
+
+  @@index([renderId, occurredAt])
+}
+
+model LandingPublicationAccess {
+  id         String   @id @default(cuid())
+  renderId   String
+  token      String
+  accessType String
+  occurredAt DateTime
+
+  @@index([renderId, occurredAt])
+  @@index([token, occurredAt])
+}
+
+model LandingMetricAggregate {
+  key        String   @id
+  metricName String
+  bucketDate DateTime
+  value      Int
+
+  @@index([metricName, bucketDate])
+}
+

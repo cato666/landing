@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{default presentation.brandTag "Apólice Digital Interativa"}}</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#f3f6fb;--card:#ffffff;--text:#16243f;--muted:#60708c;--primary:#ff002d;--primary-soft:#fff0f2;--border:#fad4da;--ok:#169c5a;--shadow:0 12px 28px rgba(22,36,63,.08);--radius:18px}
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text);background:linear-gradient(180deg,#eef3fb 0%, var(--bg) 220px)}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px 20px 32px}.topbar-wrap{position:sticky;top:0;z-index:1000;background:rgba(243,246,251,.92);backdrop-filter:blur(10px);padding:20px 12px 10px}
+    .topbar{max-width:1200px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:999px;box-shadow:var(--shadow);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto}.brand-logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(180deg,#ff4d6a,#ff002d);flex:0 0 auto}.brand-text{min-width:0;display:flex;flex-direction:column}
+    .brand-title{font-weight:800;font-size:18px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand-subtitle{color:var(--muted);font-weight:600;font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-links{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}.nav-link{text-decoration:none;color:var(--text);border:1px solid var(--border);background:#f8fbff;padding:11px 16px;border-radius:999px;font-weight:700;font-size:14px;transition:.2s ease;display:inline-flex;align-items:center;gap:8px}.nav-link:hover{background:var(--primary-soft);border-color:#ffb3be}.nav-link.active{background:var(--primary-soft);border-color:#ffb3be;color:var(--primary)}
+    .nav-toggle{display:none;border:1px solid var(--border);background:#fff;border-radius:14px;padding:10px 12px;font-weight:800;color:var(--text);cursor:pointer}.mobile-menu{display:none;max-width:1200px;margin:10px auto 0;background:#fff;border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);padding:12px}.mobile-menu.open{display:block}
+    section[id]{scroll-margin-top:120px}.hero{margin-top:14px;background:linear-gradient(135deg,#1a0008 0%, #ff002d 100%);color:#fff;border-radius:28px;padding:28px;box-shadow:var(--shadow);display:grid;grid-template-columns:1.3fr .9fr;gap:24px;align-items:center}
+    .hero small{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);padding:8px 12px;border-radius:999px;margin-bottom:14px;font-weight:600}.hero h1{font-size:34px;margin:0 0 10px;line-height:1.1}.hero p{margin:0 0 18px;color:rgba(255,255,255,.88);font-size:16px}
+    .hero-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}.hero-stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:14px}.hero-stat label{display:block;font-size:12px;opacity:.75;margin-bottom:6px}.hero-stat strong{font-size:16px}
+    .vehicle-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:16px;backdrop-filter: blur(5px)}.vehicle-photo{width:100%;height:260px;object-fit:cover;border-radius:18px;display:block;background:#dfe8ff}.vehicle-title{margin:14px 0 4px;font-size:20px;font-weight:700}.vehicle-sub{margin:0;color:rgba(255,255,255,.8);font-size:14px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}.card h2{margin:0 0 16px;font-size:22px}.subgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .item{padding:14px;border-radius:14px;background:#fff8f9;border:1px solid #fad4da}.item label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}.item strong,.item span{font-size:15px}.pill-list{display:flex;flex-wrap:wrap;gap:10px}.pill{padding:10px 14px;border-radius:999px;background:var(--primary-soft);color:var(--primary);border:1px solid #ffb3be;font-weight:600;font-size:14px}
+    .map{width:100%;height:290px;border:0;border-radius:18px;background:#edf2fa}.accordion{display:grid;gap:12px}details{border:1px solid var(--border);border-radius:14px;background:#fff8f9;overflow:hidden}summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:700;display:flex;justify-content:space-between;gap:14px}summary::-webkit-details-marker{display:none}.cov-body{padding:0 18px 18px;color:var(--muted);line-height:1.5}.money{color:var(--ok);font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--border)}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+    @media (max-width:960px){.hero,.grid{grid-template-columns:1fr}.subgrid{grid-template-columns:1fr}.hero h1{font-size:28px}.nav-links.desktop{display:none}.nav-toggle{display:inline-flex;align-items:center;justify-content:center}.topbar{border-radius:28px;padding:14px 16px}.brand-title{font-size:16px}.brand-subtitle{font-size:11px}}
+    @media (min-width:961px){.mobile-menu{display:none !important}}
+    @media (max-width:640px){.wrap{padding:14px 14px 28px}.topbar-wrap{padding:14px 12px 8px}.brand-logo{width:38px;height:38px;border-radius:13px}.brand-title{font-size:15px}.brand-subtitle{font-size:11px}.mobile-menu .nav-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;justify-content:stretch}.mobile-menu .nav-link{justify-content:center;text-align:center;padding:12px 10px}.hero{margin-top:10px;padding:20px;border-radius:22px}.hero-grid{grid-template-columns:1fr}.vehicle-photo{height:220px}.card{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="topbar-wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-logo"></div>
+        <div class="brand-text">
+          <div class="brand-title" id="navBrandTitle">{{default branding.empresa "Porto Seguro"}}</div>
+          <div class="brand-subtitle" id="navBrandSubtitle">{{default presentation.navSubtitle "MVP apólice visual interativa"}}</div>
+        </div>
+      </div>
+      <div class="nav-links desktop">
+        <a class="nav-link" href="#resumo">🏠 <span>Resumo</span></a>
+        <a class="nav-link" href="#beneficios">✨ <span>Benefícios</span></a>
+        <a class="nav-link" href="#localizacao">📍 <span>Localização</span></a>
+        <a class="nav-link" href="#coberturas">🛡️ <span>Coberturas</span></a>
+        <a class="nav-link" href="#pagamento">💳 <span>Pagamento</span></a>
+      </div>
+      <button class="nav-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="nav-links">
+        <a class="nav-link" href="#resumo">🏠 <span>Resumo</span></a>
+        <a class="nav-link" href="#beneficios">✨ <span>Benefícios</span></a>
+        <a class="nav-link" href="#localizacao">📍 <span>Localização</span></a>
+        <a class="nav-link" href="#coberturas">🛡️ <span>Coberturas</span></a>
+        <a class="nav-link" href="#pagamento">💳 <span>Pagamento</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="resumo" class="hero">
+      <div>
+        <small id="brandTag">{{default presentation.brandTag "Apólice digital interativa"}}</small>
+        <h1 id="heroTitle">{{default presentation.heroTitle (concat "Olá, " cliente.nome)}}</h1>
+        <p id="heroDesc">{{default presentation.heroDescription "Aqui você pode entender sua apólice de forma visual, simples e interativa."}}</p>
+        <div class="hero-grid">
+          <div class="hero-stat"><label>Número da apólice</label><strong id="polizaNumero">{{default poliza.numero "-"}}</strong></div>
+          <div class="hero-stat"><label>Vigência</label><strong id="vigencia">{{presentation.vigenciaTexto}}</strong></div>
+          <div class="hero-stat"><label>Prêmio total</label><strong id="primaTotal">{{formatCurrency poliza.primaTotal poliza.moneda}}</strong></div>
+          <div class="hero-stat"><label>Franquia</label><strong id="franquia">{{formatCurrency poliza.franquia poliza.moneda}}</strong></div>
+        </div>
+      </div>
+      <div class="vehicle-card">
+        <img id="vehiclePhoto" class="vehicle-photo" alt="Foto do veículo" src="{{vehiculo.fotoUrl}}" />
+        <div class="vehicle-title" id="vehicleTitle">{{default presentation.vehicleTitle vehiculo.modelo}}</div>
+        <p class="vehicle-sub" id="vehicleSub">{{presentation.vehicleSubtitle}}</p>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section id="cliente" class="card"><h2>Dados do cliente</h2><div class="subgrid"><div class="item"><label>Nome</label><strong id="clienteNome">{{cliente.nome}}</strong></div><div class="item"><label>CPF / Documento</label><span id="clienteDocumento">{{cliente.documento}}</span></div><div class="item"><label>Telefone</label><span id="clienteTelefono">{{cliente.telefone}}</span></div><div class="item"><label>E-mail</label><span id="clienteEmail">{{cliente.email}}</span></div></div></section>
+      <section id="veiculo" class="card"><h2>Veículo segurado</h2><div class="subgrid"><div class="item"><label>Marca / Modelo</label><strong id="vehiculoModelo">{{default presentation.vehicleTitle vehiculo.modelo}}</strong></div><div class="item"><label>Ano</label><span id="vehiculoAnio">{{vehiculo.anio}}</span></div><div class="item"><label>Placa</label><span id="vehiculoPatente">{{vehiculo.patente}}</span></div><div class="item"><label>Combustível</label><span id="vehiculoCombustible">{{vehiculo.combustible}}</span></div></div></section>
+      <section id="beneficios" class="card"><h2>Benefícios e assistências</h2><div class="pill-list" id="beneficiosList">{{#each beneficios}}<div class="pill">{{this.titulo}}</div>{{/each}}</div></section>
+      <section id="atendimento" class="card"><h2>Atendimento e corretora</h2><div class="subgrid"><div class="item"><label>Corretora</label><strong id="corredorNombre">{{corredor.nombre}}</strong></div><div class="item"><label>Telefone</label><span id="corredorTelefono">{{corredor.telefono}}</span></div><div class="item"><label>E-mail</label><span id="corredorEmail">{{corredor.email}}</span></div><div class="item"><label>Canal 24h</label><span id="canalAtencion">{{default presentation.primaryChannel "4004 7678"}}</span></div></div></section>
+      <section id="localizacao" class="card"><h2>Localização do segurado</h2><div class="item" style="margin-bottom:14px;"><label>Endereço</label><strong id="direccion">{{residencia.direccion}}</strong></div><iframe id="mapFrame" class="map" loading="eager" referrerpolicy="no-referrer-when-downgrade" src="{{presentation.mapUrl}}"></iframe></section>
+      <section id="coberturas" class="card"><h2>Coberturas do seguro</h2><div class="accordion" id="coberturasList">{{#each coberturas}}<details><summary><span>{{this.titulo}}</span><span class="money">{{formatCurrency this.monto ../poliza.moneda}}</span></summary><div class="cov-body">{{this.detalle}}</div></details>{{/each}}</div></section>
+      <section id="pagamento" class="card"><h2>Pagamento</h2><div class="subgrid"><div class="item"><label>Forma de pagamento</label><strong id="formaPago">{{pagos.forma}}</strong></div><div class="item"><label>Status</label><strong id="estadoPoliza">{{poliza.estado}}</strong></div></div><table id="tablaCuotas"><thead><tr><th>Parcela</th><th>Vencimento</th><th>Valor</th></tr></thead><tbody>{{#each pagos.cuotas}}<tr><td>{{this.numero}}</td><td>{{formatDateBR this.vencimiento}}</td><td>{{formatCurrency this.valor ../poliza.moneda}}</td></tr>{{/each}}</tbody></table></section>
+      <section class="card"><h2>Visão gráfica das parcelas</h2><canvas id="paymentsChart" height="130"></canvas></section>
+    </div>
+  </div>
+
+  <script id="paymentsChartPayload" type="application/json">{{{json presentation.paymentChart}}}</script>
+  <script>
+    const paymentsChartPayload = JSON.parse(document.getElementById("paymentsChartPayload").textContent);
+    const toggle = document.getElementById("menuToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    toggle.addEventListener("click", () => {
+      mobileMenu.classList.toggle("open");
+      toggle.textContent = mobileMenu.classList.contains("open") ? "✕" : "☰";
+    });
+
+    document.querySelectorAll(".mobile-menu a").forEach((link) => {
+      link.addEventListener("click", () => {
+        mobileMenu.classList.remove("open");
+        toggle.textContent = "☰";
+      });
+    });
+
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll(".nav-link");
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute("id");
+          navLinks.forEach((link) => {
+            link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+          });
+        }
+      });
+    }, { rootMargin: "-35% 0px -45% 0px", threshold: 0.1 });
+
+    sections.forEach((section) => observer.observe(section));
+
+    const ctx = document.getElementById("paymentsChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: paymentsChartPayload.labels,
+        datasets: [{ label: "Valor por parcela", data: paymentsChartPayload.values, backgroundColor: "#ff002d", borderColor: "#cc0024", borderWidth: 1 }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  </script>
+</body>
+</html>

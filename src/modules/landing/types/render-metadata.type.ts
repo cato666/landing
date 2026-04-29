@@ -4,6 +4,7 @@ export interface RenderMetadata {
   templateCode: string;
   templateVersion: string;
   createdAt: string;
+  expiresAt: string | null;
   status: 'generated';
   artifacts: {
     input: string;

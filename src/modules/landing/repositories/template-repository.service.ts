@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import { resolveTemplatesRoot } from '../../../common/config/path-config';
+import { StorageService } from '../../../common/storage/storage.service';
 import { ResolvedTemplate } from '../types/template.type';
 
 @Injectable()
 export class TemplateRepositoryService {
-  private readonly templatesRoot = path.resolve(process.cwd(), 'templates');
+  private readonly templatesRoot = resolveTemplatesRoot();
+
+  constructor(private readonly storageService: StorageService) {}
 
   async getTemplate(templateCode: string, templateVersion?: string): Promise<ResolvedTemplate> {
     const candidates = templateVersion
@@ -27,11 +30,11 @@ export class TemplateRepositoryService {
         ];
 
     for (const candidate of candidates) {
-      if (await fs.pathExists(candidate.path)) {
+      if (await this.storageService.pathExists(candidate.path)) {
         return {
           code: templateCode,
           version: candidate.version,
-          content: await fs.readFile(candidate.path, 'utf8'),
+          content: await this.storageService.readFile(candidate.path, 'utf8'),
         };
       }
     }
